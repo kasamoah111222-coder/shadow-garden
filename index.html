@@ -52,6 +52,13 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
 @keyframes sgrun{from{transform:translateX(0)}to{transform:translateX(400%)}}
 @keyframes sgdiag{from{background-position:0 0}to{background-position:100px 0}}
 @media(prefers-reduced-motion:reduce){.sg-lines i,.sg-lines:before{animation:none}}
+
+.onlinebar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:2px 2px 10px;border-bottom:1px solid var(--line);margin-bottom:10px;flex-wrap:wrap}
+.onlinebar b{color:var(--lav)}
+.odot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);display:inline-block}
+.odot.off{background:#4a4560;box-shadow:none}
+.pill.on{color:#04120d;background:var(--green);border-color:var(--green);font-weight:700}
+#fview{position:fixed;inset:0;z-index:80;background:#000d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}#fview img{max-width:100%;max-height:78vh;border-radius:10px;border:1px solid var(--line)}#fview .actions{margin:0;align-items:center}#fview a.btn{text-decoration:none}
 </style>
 </head>
 <body class="locked">
@@ -66,6 +73,7 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
     <button data-page="agents"><span class="ico">♟</span> Agents</button>
     <button data-page="missions"><span class="ico">◎</span> Missions</button>
     <button data-page="reports"><span class="ico">▤</span> Intelligence Reports</button>
+    <button data-page="files"><span class="ico">▣</span> Files</button>
     <button data-page="chat"><span class="ico">✉</span> Guild chat <span id="chatBadge" class="cbadge" style="display:none">0</span></button>
     <button data-page="resources"><span class="ico">◇</span> Resources & Rules</button>
   </nav>
@@ -105,12 +113,17 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
 </section>
 <section class="page" id="page-reports">
   <div class="section-head"><div><div class="eyebrow">Evidence desk</div><h2>Intelligence reports</h2><p>Record claims, source context, and verification status.</p></div><button class="btn" id="addReportBtn">＋ New report</button></div>
-  <div class="card panel hidden" id="reportFormCard"><h3>Submit report</h3><form id="reportForm"><div class="form-grid"><div class="field"><label for="reportTitle">Report title</label><input id="reportTitle" required maxlength="100" placeholder="Short, factual title"></div><div class="field"><label for="reportAgent">Submitted by</label><select id="reportAgent"></select></div><div class="field"><label for="reportConfidence">Confidence</label><select id="reportConfidence"><option>Unverified</option><option>Low</option><option>Moderate</option><option>High</option></select></div><div class="field"><label for="reportStatus">Verification status</label><select id="reportStatus"><option>Unverified</option><option>Corroborated</option><option>Verified</option><option>Contradicted</option></select></div></div><div class="field"><label for="reportBody">Report details</label><textarea id="reportBody" required maxlength="3000" placeholder="Separate direct observations from interpretations."></textarea></div><div class="field"><label for="reportSource">Source notes (avoid private or sensitive details)</label><input id="reportSource" maxlength="300" placeholder="e.g. first-hand account, public post, independent source"></div><div class="actions"><button class="btn" type="submit">Save report</button><button class="small-btn" type="button" id="cancelReport">Cancel</button></div></form></div>
+  <div class="card panel hidden" id="reportFormCard"><h3>Submit report</h3><form id="reportForm"><div class="form-grid"><div class="field"><label for="reportTitle">Report title</label><input id="reportTitle" required maxlength="100" placeholder="Short, factual title"></div><div class="field"><label for="reportAgent">Submitted by</label><select id="reportAgent"></select></div><div class="field"><label for="reportConfidence">Confidence</label><select id="reportConfidence"><option>Unverified</option><option>Low</option><option>Moderate</option><option>High</option></select></div><div class="field"><label for="reportStatus">Verification status</label><select id="reportStatus"><option>Unverified</option><option>Corroborated</option><option>Verified</option><option>Contradicted</option></select></div></div><div class="field"><label for="reportBody">Report details</label><textarea id="reportBody" required maxlength="3000" placeholder="Separate direct observations from interpretations."></textarea></div><div class="field"><label for="reportSource">Source notes (avoid private or sensitive details)</label><input id="reportSource" maxlength="300" placeholder="e.g. first-hand account, public post, independent source"></div><div class="field"><label for="reportFiles">Attach files (optional, up to about 700 KB each; photos are shrunk automatically)</label><input id="reportFiles" type="file" multiple></div><div class="actions"><button class="btn" type="submit">Save report</button><button class="small-btn" type="button" id="cancelReport">Cancel</button></div></form></div>
   <div class="card panel"><div class="toolbar" style="margin-bottom:14px"><select id="reportFilter" class="search" style="width:auto"><option value="All">All verification statuses</option><option>Unverified</option><option>Corroborated</option><option>Verified</option><option>Contradicted</option></select><span class="muted" id="reportCount"></span></div><div class="table-wrap"><table class="table"><thead><tr><th>Report</th><th>Agent</th><th>Confidence</th><th>Status</th><th>Action</th></tr></thead><tbody id="reportsTable"></tbody></table></div></div>
 </section>
+<section class="page" id="page-files">
+  <div class="section-head"><div><div class="eyebrow">Shared archive</div><h2>Files</h2><p>Upload files everyone in the guild can open. Attach files to a report from the Reports page.</p></div><button class="btn" id="addFileBtn">＋ Upload files</button></div>
+  <div class="card panel"><div id="filesList" class="list"></div></div>
+</section>
+<input type="file" id="fileInput" multiple hidden><input type="file" id="attachInput" multiple hidden>
 <section class="page" id="page-chat">
   <div class="section-head"><div><div class="eyebrow">Open channel</div><h2>Guild chat</h2><p>Visible to every member. Tag someone with @codename, or everyone with @everyone.</p></div></div>
-  <div class="card panel"><div id="chatList" class="chat-list"></div><div class="chat-tags" id="chatTags"></div><div class="chat-compose"><textarea id="chatInput" maxlength="500" rows="2" placeholder="Message the guild… use @codename to tag"></textarea><button class="btn" id="chatSend">Send</button></div></div>
+  <div class="card panel"><div id="onlineBar" class="onlinebar"></div><div id="chatList" class="chat-list"></div><div class="chat-tags" id="chatTags"></div><div class="chat-compose"><textarea id="chatInput" maxlength="500" rows="2" placeholder="Message the guild… use @codename to tag"></textarea><button class="btn" id="chatSend">Send</button></div></div>
 </section>
 <section class="page" id="page-resources">
   <div class="section-head"><div><div class="eyebrow">Field manual</div><h2>Resources & rules</h2><p>Simple standards for reliable analysis.</p></div></div>
@@ -143,7 +156,7 @@ const firebaseConfig={
 const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),fs=getFirestore(fbApp);
 const $=i=>document.getElementById(i);
 const EM='@shadowgarden.app',toEmail=u=>u+EM;
-let announced=false,role='owner',owner=null,myAgent=null,profile=null,uName='',ownerName='',rosterAgents=[],chatMsgs=[],unsubs=[],busy=false;
+let fileMeta=[],attachTarget=null,presence={},presSig='',hbT=null,beatName='',announced=false,role='owner',owner=null,myAgent=null,profile=null,uName='',ownerName='',rosterAgents=[],chatMsgs=[],unsubs=[],busy=false;
 const errMsg=e=>e&&e.code==='permission-denied'?'Not allowed. Check the Firestore rules.':(e&&e.message)||'Something went wrong.';
 const col=n=>collection(fs,'networks',owner,n);
 const netDoc=()=>doc(fs,'networks',owner);
@@ -161,9 +174,9 @@ function id(){return 'id-'+Date.now().toString(36)+'-'+Math.random().toString(36
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',2600)}
 function badge(text){let c=text==='Verified'||text==='Trusted'||text==='Active'?'':text==='Contradicted'||text==='Restricted'||text==='Critical'?'red':text==='Unverified'||text==='Verify reports'||text==='High'?'warn':'';return `<span class="pill ${c}">${esc(text)}</span>`}
-function agentCard(a){return `<article class="card agent searchable"><div class="agent-top"><div class="avatar">${a.name.toLowerCase().includes('rat')?'♟':'♜'}</div><div><h3>${esc(a.name)}</h3><div class="role">${esc(a.role)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:13px">${badge(a.status)}${badge(a.trust)}${a.login?'<span class="pill">🔑 '+esc(a.login)+'</span>':''}</div><p>${esc(a.notes||'No notes recorded.')}</p><div class="card-actions"><button class="small-btn" onclick="editAgent('${a.id}')">Edit</button><button class="small-btn" onclick="assignAgent('${a.id}')">Assign mission</button><button class="small-btn" onclick="deleteAgent('${a.id}')">Delete</button></div></article>`}
+function agentCard(a){return `<article class="card agent searchable"><div class="agent-top"><div class="avatar">${a.name.toLowerCase().includes('rat')?'♟':'♜'}</div><div><h3>${esc(a.name)}</h3><div class="role">${esc(a.role)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:13px">${isOn(a.id)?'<span class="pill on">● online</span>':''}${badge(a.status)}${badge(a.trust)}${a.login?'<span class="pill">🔑 '+esc(a.login)+'</span>':''}</div><p>${esc(a.notes||'No notes recorded.')}</p><div class="card-actions"><button class="small-btn" onclick="editAgent('${a.id}')">Edit</button><button class="small-btn" onclick="assignAgent('${a.id}')">Assign mission</button><button class="small-btn" onclick="deleteAgent('${a.id}')">Delete</button></div></article>`}
 function missionRow(m){return `<div class="list-row searchable"><div><strong>${esc(m.title)}</strong><small>${esc(m.agentName||'Unassigned')} · ${esc(m.priority)} priority</small><small>${esc(m.objective)}</small></div><div style="display:grid;gap:7px;justify-items:end">${badge(m.status)}<div style="display:flex;gap:6px"><button class="small-btn" onclick="cycleMission('${m.id}')">Update</button><button class="small-btn" onclick="deleteMission('${m.id}')">Delete</button></div></div></div>`}
-function reportRow(r){return `<tr class="searchable"><td><strong>${esc(r.title)}</strong><div class="muted" style="font-size:11px">${esc(r.date||'')}</div><div style="font-size:12px;margin-top:4px">${esc(r.body)}</div><div class="muted" style="font-size:11px;margin-top:4px">Source notes: ${esc(r.source||'None')}</div></td><td>${esc(r.agentName||'Unassigned')}</td><td>${badge(r.confidence)}</td><td>${badge(r.status)}</td><td><button class="small-btn" onclick="cycleReport('${r.id}')">Update</button> <button class="small-btn" onclick="deleteReport('${r.id}')">Delete</button></td></tr>`}
+function reportRow(r){return `<tr class="searchable"><td><strong>${esc(r.title)}</strong><div class="muted" style="font-size:11px">${esc(r.date||'')}</div><div style="font-size:12px;margin-top:4px">${esc(r.body)}</div><div class="muted" style="font-size:11px;margin-top:4px">Source notes: ${esc(r.source||'None')}</div>${attachHtml(r)}</td><td>${esc(r.agentName||'Unassigned')}</td><td>${badge(r.confidence)}</td><td>${badge(r.status)}</td><td><button class="small-btn" onclick="attachToReport('${r.id}')">📎 Attach</button> <button class="small-btn" onclick="cycleReport('${r.id}')">Update</button> <button class="small-btn" onclick="deleteReport('${r.id}')">Delete</button></td></tr>`}
 function empty(msg){return `<div class="empty">${msg}</div>`}
 function render(){
  document.getElementById('statAgents').textContent=db.agents.length;
@@ -256,13 +269,54 @@ window.deleteAgent=async function(aid){if(role!=='owner')return;if(!confirm('Del
 $('missionForm').onsubmit=async e=>{e.preventDefault();if(role!=='owner')return;const a=db.agents.find(x=>x.id===$('missionAgent').value);const m={id:id(),title:$('missionTitle').value.trim(),agentId:a?.id||'',agentName:a?.name||'Unassigned',priority:$('missionPriority').value,status:$('missionStatus').value,objective:$('missionObjective').value.trim(),date:new Date().toLocaleDateString(),created:Date.now()};try{await setDoc(doc(col('missions'),m.id),m);e.target.reset();closeForm('missionFormCard');toast('Mission created.')}catch(err){toast(errMsg(err))}};
 window.cycleMission=async function(mid){const m=db.missions.find(x=>x.id===mid);if(!m)return;if(role==='agent'&&m.status==='Completed'){toast('Completed missions can only be changed by the guild leader.');return}const states=['Planned','In progress','Completed','On hold'];try{await updateDoc(doc(col('missions'),mid),{status:states[(states.indexOf(m.status)+1)%states.length]});toast('Mission status updated.')}catch(err){toast(errMsg(err))}};
 window.deleteMission=async function(mid){if(role!=='owner')return;if(!confirm('Delete this mission?'))return;try{await deleteDoc(doc(col('missions'),mid));toast('Mission deleted.')}catch(err){toast(errMsg(err))}};
-$('reportForm').onsubmit=async e=>{e.preventDefault();const a=role==='agent'?db.agents.find(x=>x.id===myAgent):db.agents.find(x=>x.id===$('reportAgent').value);const conf=$('reportConfidence').value;const r={id:id(),title:$('reportTitle').value.trim().slice(0,100),agentId:a?.id||'',agentName:a?.name||'Unassigned',confidence:conf,status:role==='agent'?'Unverified':$('reportStatus').value,body:$('reportBody').value.trim().slice(0,3000),source:$('reportSource').value.trim().slice(0,300),date:new Date().toLocaleString(),created:Date.now()};if(role==='agent'){if(!a){toast('Your agent record is missing.');return}if(!['Unverified','Low','Moderate','High'].includes(r.confidence))r.confidence='Unverified'}try{await setDoc(doc(col('reports'),r.id),r);e.target.reset();closeForm('reportFormCard');toast('Report saved.')}catch(err){toast(errMsg(err))}};
+$('reportForm').onsubmit=async e=>{e.preventDefault();const a=role==='agent'?db.agents.find(x=>x.id===myAgent):db.agents.find(x=>x.id===$('reportAgent').value);const conf=$('reportConfidence').value;const r={id:id(),title:$('reportTitle').value.trim().slice(0,100),agentId:a?.id||'',agentName:a?.name||'Unassigned',confidence:conf,status:role==='agent'?'Unverified':$('reportStatus').value,body:$('reportBody').value.trim().slice(0,3000),source:$('reportSource').value.trim().slice(0,300),date:new Date().toLocaleString(),created:Date.now()};if(role==='agent'){if(!a){toast('Your agent record is missing.');return}if(!['Unverified','Low','Moderate','High'].includes(r.confidence))r.confidence='Unverified'}const picked=[...($('reportFiles').files||[])];try{await setDoc(doc(col('reports'),r.id),r);e.target.reset();closeForm('reportFormCard');toast('Report saved.');if(picked.length)await uploadMany(picked,{reportId:r.id,agentId:r.agentId||''})}catch(err){toast(errMsg(err))}};
 window.cycleReport=async function(rid){if(role!=='owner')return;const r=db.reports.find(x=>x.id===rid);if(!r)return;const states=['Unverified','Corroborated','Verified','Contradicted'];try{await updateDoc(doc(col('reports'),rid),{status:states[(states.indexOf(r.status)+1)%states.length]});toast('Report verification updated.')}catch(err){toast(errMsg(err))}};
 window.deleteReport=async function(rid){if(role!=='owner')return;if(!confirm('Delete this report?'))return;try{await deleteDoc(doc(col('reports'),rid));toast('Report deleted.')}catch(err){toast(errMsg(err))}};
 $('importFile').onchange=async e=>{const f=e.target.files[0];if(!f||role!=='owner')return;try{const parsed=JSON.parse(await f.text());if(!Array.isArray(parsed.agents)||!Array.isArray(parsed.missions)||!Array.isArray(parsed.reports))throw new Error('Invalid backup');if(!confirm('Import will replace ALL guild data for everyone. Agent logins are not imported. Continue?'))return;await replaceAll(parsed);toast('Backup imported.')}catch(err){toast('Could not import this backup.')}e.target.value=''};
 $('resetBtn').onclick=async()=>{if(role!=='owner')return;if(confirm('Reset to the original demo agents and delete all missions and reports for everyone? Custom agents and their logins will be removed.')){try{await replaceAll(starter);toast('Demo data reset.')}catch(err){toast(errMsg(err))}}};
 
-async function announceOnline(name){try{const k='sg_online_'+uName,last=+localStorage.getItem(k)||0;if(Date.now()-last<600000)return;localStorage.setItem(k,String(Date.now()))}catch(e){}const m={id:id(),fromId:myAgent,from:name,text:'● '+name+' is now online',ts:Date.now(),ment:['all'],sys:true};try{await setDoc(doc(col('chat'),m.id),m)}catch(e){console.error(e)}}
+async function announceOnline(name){const m={id:id(),fromId:myAgent,from:name,text:'● '+name+' is now online',ts:Date.now(),ment:['all'],sys:true};try{await setDoc(doc(col('chat'),m.id),m)}catch(e){console.error(e)}}
+const onlineList=()=>{const now=Date.now();return Object.values(presence).filter(p=>now-(+p.ts||0)<120000)};
+const isOn=i=>onlineList().some(p=>p.id===i);
+function renderPresence(){const b=$('onlineBar');if(!b)return;const o=onlineList();b.innerHTML=o.length?'<span class="odot"></span> Online now: <b>'+o.map(p=>esc(p.name)).join(', ')+'</b>':'<span class="odot off"></span> Nobody online'}
+function presChanged(){const s=onlineList().map(p=>p.id).sort().join(',');if(s!==presSig){presSig=s;return true}return false}
+async function beat(){try{await setDoc(doc(col('presence'),selfIdF()),{id:selfIdF(),name:beatName,ts:Date.now(),role:role})}catch(e){console.error(e)}}
+async function startPresence(name){clearInterval(hbT);beatName=name;let was=0;try{const s=await getDoc(doc(col('presence'),selfIdF()));if(s.exists())was=+s.data().ts||0}catch(e){}await beat();if(role==='agent'&&Date.now()-was>180000)announceOnline(name);hbT=setInterval(()=>{if(!document.hidden)beat()},45000)}
+async function stopPresence(){clearInterval(hbT);hbT=null;try{if(owner)await deleteDoc(doc(col('presence'),selfIdF()))}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&hbT&&owner)beat()});
+setInterval(()=>{if(owner&&!document.body.classList.contains('locked')){renderPresence();if(presChanged())render()}},20000);
+const MAXRAW=700000;
+const fmtSize=s=>s<1024?s+' B':Math.round(s/1024)+' KB';
+const canDel=f=>role==='owner'||f.byId===selfIdF();
+const fIcon=f=>/^image\//.test(f.type)?'🖼':/pdf/.test(f.type)?'📄':'📎';
+function attachHtml(r){const fl=fileMeta.filter(f=>f.reportId===r.id);if(!fl.length)return '';return '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">'+fl.map(f=>'<span style="display:inline-flex;gap:3px"><button class="small-btn" onclick="openFile(\''+f.id+'\')">'+fIcon(f)+' '+esc(f.name)+' <span class="muted">'+fmtSize(f.size)+'</span></button>'+(canDel(f)?'<button class="small-btn" aria-label="Remove file" onclick="deleteFile(\''+f.id+'\')">✕</button>':'')+'</span>').join('')+'</div>'}
+function renderFiles(){const el=$('filesList');if(!el)return;const l=fileMeta.filter(f=>f.shared);el.innerHTML=l.map(f=>'<div class="list-row searchable"><div><strong>'+fIcon(f)+' '+esc(f.name)+'</strong><small>'+esc(f.by||'')+' · '+fmtSize(f.size)+' · '+esc(fmtTime(+f.ts||0))+'</small></div><div style="display:flex;gap:6px"><button class="small-btn" onclick="openFile(\''+f.id+'\')">Open</button>'+(canDel(f)?'<button class="small-btn" onclick="deleteFile(\''+f.id+'\')">Delete</button>':'')+'</div></div>').join('')||empty('No files yet. Upload one to share it with the guild.');applySearch()}
+function filesChanged(){renderFiles();render()}
+const readB64=file=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});
+async function prepFile(file){
+ let blob=file,type=file.type||'application/octet-stream',name=file.name||'file';
+ if(/^image\/(png|jpeg|webp|bmp)$/.test(type)&&file.size>150000){
+  try{const bmp=await createImageBitmap(file);let mx=1600,q=.82;
+   for(let i=0;i<6;i++){const s=Math.min(1,mx/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*s);c.height=Math.round(bmp.height*s);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(bmp,0,0,c.width,c.height);const b=await new Promise(r=>c.toBlob(r,'image/jpeg',q));if(b&&b.size<=MAXRAW){blob=b;type='image/jpeg';name=name.replace(/\.[^.]+$/,'')+'.jpg';break}mx=Math.round(mx*.75);q=Math.max(.5,q-.06)}
+  }catch(e){}
+ }
+ if(blob.size>MAXRAW)throw new Error(name+' is too large (max about 700 KB). Share a link for bigger files.');
+ return{name:name.slice(0,120),type:type,size:blob.size,b64:await readB64(blob)};
+}
+async function saveFile(file,o){
+ const f=await prepFile(file),fid=id();
+ const meta={id:fid,name:f.name,type:f.type,size:f.size,by:beatName||capw(uName),byId:selfIdF(),shared:!!o.shared,reportId:o.reportId||'',agentId:o.agentId||'',ts:Date.now()};
+ await setDoc(doc(col('files'),fid),meta);
+ try{await setDoc(doc(col('filedata'),fid),{data:f.b64})}catch(e){await deleteDoc(doc(col('files'),fid)).catch(()=>{});throw e}
+}
+async function uploadMany(list,o){for(let i=0;i<list.length;i++){try{toast('Uploading '+(i+1)+' of '+list.length+'…');await saveFile(list[i],o);toast('Uploaded '+list[i].name)}catch(err){toast(errMsg(err))}}}
+$('addFileBtn').onclick=()=>$('fileInput').click();
+$('fileInput').onchange=async e=>{const l=[...e.target.files];e.target.value='';await uploadMany(l,{shared:true})};
+window.attachToReport=rid=>{attachTarget=rid;$('attachInput').click()};
+$('attachInput').onchange=async e=>{const l=[...e.target.files];e.target.value='';const r=db.reports.find(x=>x.id===attachTarget);if(!r){toast('Report not found.');return}await uploadMany(l,{reportId:r.id,agentId:r.agentId||''})};
+function showViewer(url,m){const old=$('fview');if(old)old.remove();const v=document.createElement('div');v.id='fview';v.innerHTML='<img alt=""><div class="actions"><a class="btn" download>Download</a><button class="small-btn" type="button">Close</button></div>';v.querySelector('img').src=url;const a=v.querySelector('a');a.href=url;a.download=m.name;const close=()=>{v.remove();URL.revokeObjectURL(url)};v.querySelector('button').onclick=close;v.addEventListener('click',e=>{if(e.target===v)close()});document.body.appendChild(v)}
+window.openFile=async function(fid){const m=fileMeta.find(x=>x.id===fid);if(!m)return;try{toast('Loading file…');const s=await getDoc(doc(col('filedata'),fid));if(!s.exists()){toast('File data is missing.');return}const bin=atob(s.data().data),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);const url=URL.createObjectURL(new Blob([u8],{type:m.type||'application/octet-stream'}));if(/^image\//.test(m.type)){showViewer(url,m)}else{const a=document.createElement('a');a.href=url;a.download=m.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}}catch(err){toast(errMsg(err))}};
+window.deleteFile=async function(fid){const m=fileMeta.find(x=>x.id===fid);if(!m||!canDel(m))return;if(!confirm('Delete this file?'))return;try{await deleteDoc(doc(col('filedata'),fid)).catch(()=>{});await deleteDoc(doc(col('files'),fid));toast('File deleted.')}catch(err){toast(errMsg(err))}};
 function stopSync(){unsubs.forEach(u=>{try{u()}catch(e){}});unsubs=[]}
 function startSync(){
  stopSync();
@@ -271,12 +325,17 @@ function startSync(){
  const ownerMode=role==='owner';
  const A=ownerMode?col('agents'):null;
  if(ownerMode)unsubs.push(onSnapshot(A,s=>{db.agents=s.docs.map(d=>d.data()).sort(byCreated);render();chatTick()},bad));
- else unsubs.push(onSnapshot(doc(fs,'networks',owner,'agents',myAgent),d=>{db.agents=d.exists()?[d.data()]:[];render();if(!announced&&d.exists()){announced=true;announceOnline(d.data().name)}},bad));
+ else unsubs.push(onSnapshot(doc(fs,'networks',owner,'agents',myAgent),d=>{db.agents=d.exists()?[d.data()]:[];render();if(!announced&&d.exists()){announced=true;startPresence(d.data().name)}},bad));
  const mq=ownerMode?col('missions'):query(col('missions'),where('agentId','==',myAgent));
  const rq=ownerMode?col('reports'):query(col('reports'),where('agentId','==',myAgent));
  unsubs.push(onSnapshot(mq,s=>{db.missions=s.docs.map(d=>d.data()).sort(byCreated);render()},bad));
  unsubs.push(onSnapshot(rq,s=>{db.reports=s.docs.map(d=>d.data()).sort(byCreated);render()},bad));
  unsubs.push(onSnapshot(netDoc(),d=>{const x=d.data()||{};rosterAgents=x.roster||[];if(x.ownerName)ownerName=x.ownerName;chatTick()},bad));
+ if(ownerMode)unsubs.push(onSnapshot(col('files'),s=>{fileMeta=s.docs.map(d=>d.data()).sort((a,b)=>(b.ts||0)-(a.ts||0));filesChanged()},bad));
+ else{const m1={},m2={},mg=()=>{fileMeta=Object.values(Object.assign({},m1,m2)).sort((a,b)=>(b.ts||0)-(a.ts||0));filesChanged()};
+  unsubs.push(onSnapshot(query(col('files'),where('shared','==',true)),s=>{for(const k in m1)delete m1[k];s.docs.forEach(d=>m1[d.id]=d.data());mg()},bad));
+  unsubs.push(onSnapshot(query(col('files'),where('agentId','==',myAgent)),s=>{for(const k in m2)delete m2[k];s.docs.forEach(d=>m2[d.id]=d.data());mg()},bad))}
+ unsubs.push(onSnapshot(col('presence'),s=>{presence={};s.docs.forEach(d=>presence[d.id]=d.data());renderPresence();if(presChanged())render()},bad));
  unsubs.push(onSnapshot(query(col('chat'),orderBy('ts','desc'),limit(300)),s=>{chatMsgs=s.docs.map(d=>d.data()).reverse();chatTick()},bad));
 }
 
@@ -285,11 +344,11 @@ $('auFoot').addEventListener('click',e=>{if(e.target.id==='auSwitch'){e.preventD
 let mode='login',fails=0,lockUntil=0;
 function enter(name,fresh){
  role=profile.role==='agent'?'agent':'owner';owner=profile.owner;myAgent=profile.agentId||null;uName=name;
- announced=false;ownerName=role==='owner'?name:'';db={agents:[],missions:[],reports:[]};chatMsgs=[];rosterAgents=[];
+ announced=false;ownerName=role==='owner'?name:'';db={agents:[],missions:[],reports:[]};chatMsgs=[];rosterAgents=[];fileMeta=[];
  document.body.classList.toggle('agent-mode',role==='agent');
  $('whoami').textContent=name+(role==='agent'?' (agent)':'');
  document.body.classList.remove('locked');
- showPage('overview');render();idleReset();startSync();
+ showPage('overview');render();idleReset();startSync();if(role==='owner')startPresence(capw(name));
  if(fresh){const cap=capw(name);welcome((role==='agent'?(/^agent\b/i.test(name)?'':'AGENT '):'GUILD LEADER ')+cap.toUpperCase())}
 }
 async function bootUser(u,fresh){
@@ -320,7 +379,7 @@ $('auSubmit').onclick=async()=>{const msg=$('auMsg'),name=$('auUser').value.trim
  }catch(err){msg.textContent=errMsg(err)}
  finally{busy=false;$('auSubmit').disabled=false}
 };
-$('signOutBtn').onclick=async()=>{stopSync();try{await signOut(auth)}catch(e){}role='owner';owner=null;myAgent=null;profile=null;db={agents:[],missions:[],reports:[]};chatMsgs=[];document.body.classList.add('locked');$('auUser').value='';authMode('login')};
+$('signOutBtn').onclick=async()=>{await stopPresence();presence={};presSig='';stopSync();try{await signOut(auth)}catch(e){}role='owner';owner=null;myAgent=null;profile=null;db={agents:[],missions:[],reports:[]};chatMsgs=[];fileMeta=[];document.body.classList.add('locked');$('auUser').value='';authMode('login')};
 $('pwBtn').onclick=async()=>{const cur=prompt('Current password:');if(!cur)return;const nw=prompt('New password (min 8 characters):');if(!nw)return;if(nw.length<8){toast('Password must be at least 8 characters.');return}try{const u=auth.currentUser;await reauthenticateWithCredential(u,EmailAuthProvider.credential(u.email,cur));await updatePassword(u,nw);toast('Password updated.')}catch(err){toast(err.code==='auth/invalid-credential'||err.code==='auth/wrong-password'?'Current password is incorrect.':errMsg(err))}};
 onAuthStateChanged(auth,async u=>{if(busy||owner)return;if(u){try{await bootUser(u,false)}catch(err){$('auMsg').textContent=errMsg(err)}}});
 const _render=render;render=function(){if(role!=='agent'){_render();return}const full=db;db={agents:full.agents.filter(a=>a.id===myAgent),missions:full.missions.filter(m=>m.agentId===myAgent),reports:full.reports.filter(r=>r.agentId===myAgent)};try{_render()}finally{db=full}['missionAgent','reportAgent'].forEach(i=>{const o=$(i).querySelector('option[value=""]');if(o)o.remove()})};
