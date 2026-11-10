@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#060409">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shadow Garden">
 <title>Shadow Garden | Intelligence Network</title>
 <style>
@@ -59,9 +61,42 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
 .odot.off{background:#4a4560;box-shadow:none}
 .pill.on{color:#04120d;background:var(--green);border-color:var(--green);font-weight:700}
 #fview{position:fixed;inset:0;z-index:80;background:#000d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}#fview img{max-width:100%;max-height:78vh;border-radius:10px;border:1px solid var(--line)}#fview .actions{margin:0;align-items:center}#fview a.btn{text-decoration:none}
+
+html,body{background:#060409}
+.topbar{padding-top:env(safe-area-inset-top,0px);height:calc(76px + env(safe-area-inset-top,0px))}
+@media(max-width:700px){.topbar{height:calc(65px + env(safe-area-inset-top,0px))}}
+#wm{position:fixed;inset:0;z-index:70;pointer-events:none;display:none;opacity:.07;background-repeat:repeat}
+#privacy{position:fixed;inset:0;z-index:100;background:#000;color:#6f6786;display:none;align-items:center;justify-content:center;font-size:12px;letter-spacing:3px;text-align:center;padding:20px}
+#privacy.on{display:flex}
+@media print{body>*{display:none!important}body:before{content:"Printing is disabled";color:#000;display:block;padding:20px}}
+.notice{border:1px solid var(--line);border-radius:13px;padding:16px;background:linear-gradient(145deg,#130e20,#0a0710)}
+.notice.pin{border-color:var(--lav);box-shadow:0 0 0 1px #cdb8ff33}
+.notice .nhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.notice h3{margin:0;font-size:17px;color:var(--lav)}.notice small{color:var(--muted);font-size:11px}
+.notice p{white-space:pre-wrap;margin:10px 0;color:var(--text);word-break:break-word}
+.nbanner{margin:0 0 16px;padding:12px 16px;border:1px solid var(--lav);border-radius:13px;background:linear-gradient(105deg,#1e1438,#100b1c);display:grid;gap:3px;cursor:pointer}
+.nbanner b{color:var(--lav)}.nbanner span{color:var(--muted);font-size:13px}.nbanner em{color:var(--green);font-size:12px;font-style:normal}
+body.agent-mode #noticeFormCard{display:none!important}
+
+.avatar{overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.sav{width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--line)}
+.sheet{position:fixed;inset:0;z-index:60;background:#000b;display:none;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+.sheet-card{width:min(640px,100%);max-height:86vh;background:var(--panel);border:1px solid var(--line);border-radius:16px 16px 0 0;padding:16px;display:flex;flex-direction:column;gap:10px}
+.sheet-list{overflow:auto;display:grid;gap:8px;max-height:46vh}
+.pollopt{position:relative;display:flex;justify-content:space-between;gap:8px;width:100%;margin:6px 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0e0a18;color:var(--text);cursor:pointer;overflow:hidden;text-align:left;font:inherit}
+.pollopt .bar{position:absolute;left:0;top:0;bottom:0;background:#cdb8ff33;z-index:0;transition:width .3s}
+.pollopt .lbl,.pollopt .cnt{position:relative;z-index:1}.pollopt.mine{border-color:var(--green)}
+.due{color:var(--lav)}.due.late{color:#ff8a9a;font-weight:700}
+body.agent-mode #activityWrap,body.agent-mode #dmPickWrap{display:none!important}
+
+.acct{display:none;gap:8px;padding:6px 16px 22px}
+.acct button{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:11px;font-size:13px;text-align:left}
+@media(max-width:700px){.acct{display:grid}.userchip button{display:none}.sidebar{overflow-y:auto}}
 </style>
 </head>
 <body class="locked">
+<div id="wm" aria-hidden="true"></div><div id="privacy">HIDDEN FOR PRIVACY · TAP TO RETURN</div>
 <div id="welcome" aria-live="polite"><div class="wl-logo"></div><div class="wl-hi">WELCOME</div><div class="wl-name" id="wlName"></div></div>
 <div id="intro" aria-hidden="true"><div class="ig-stage"><div class="ig-base"></div><div class="ig-pose"><div class="ig-jaw"></div><div class="ig-wolf"></div><span class="ig-eyeg"></span><span class="ig-w" style="animation-delay:.9s"></span><span class="ig-w" style="animation-delay:1.4s"></span><span class="ig-w" style="animation-delay:1.9s"></span><span class="ig-w" style="animation-delay:2.4s"></span></div></div><div class="ig-hint">TAP FOR THE HOWL (SOUND)</div></div>
 <div id="auth"><div class="auth-card"><div class="auth-logo"></div><div class="brand"><div class="wolf">狼</div><div><strong>SHADOW GARDEN</strong><small>INTELLIGENCE NETWORK</small></div></div><h2 id="auTitle">Sign in</h2><p id="auSub">Enter your credentials to open the workspace.</p><div class="field"><label for="auUser">Username</label><input type="text" id="auUser" autocomplete="username" maxlength="24"></div><div class="field"><label for="auPass">Password</label><input type="password" id="auPass" autocomplete="current-password"></div><div class="field" id="auPass2Wrap" style="display:none"><label for="auPass2">Confirm password</label><input type="password" id="auPass2" autocomplete="new-password"></div><div class="auth-row"><label style="margin:0"><input type="checkbox" id="auShow"> Show password</label><span id="auHint"></span></div><div class="auth-msg" id="auMsg" role="alert"></div><button class="auth-btn" id="auSubmit">SIGN IN</button><div class="auth-foot" id="auFoot"></div><div class="auth-foot" style="margin-top:10px">Accounts are handled by Firebase Authentication. Signed-in agents can change their own password with the Password button.</div></div></div>
@@ -70,23 +105,27 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
   <div class="brand"><div class="wolf">狼</div><div><strong>SHADOW GARDEN</strong><small>INTELLIGENCE NETWORK</small></div></div>
   <nav class="nav" aria-label="Main navigation">
     <button class="active" data-page="overview"><span class="ico">⌂</span> Overview</button>
+    <button data-page="notices"><span class="ico">📣</span> Notice board <span id="noticeBadge" class="cbadge" style="display:none">0</span></button>
     <button data-page="agents"><span class="ico">♟</span> Agents</button>
     <button data-page="missions"><span class="ico">◎</span> Missions</button>
     <button data-page="reports"><span class="ico">▤</span> Intelligence Reports</button>
     <button data-page="files"><span class="ico">▣</span> Files</button>
     <button data-page="chat"><span class="ico">✉</span> Guild chat <span id="chatBadge" class="cbadge" style="display:none">0</span></button>
+    <button data-page="dms"><span class="ico">🔒</span> Messages <span id="dmBadge" class="cbadge" style="display:none">0</span></button>
     <button data-page="resources"><span class="ico">◇</span> Resources & Rules</button>
   </nav>
   <div class="side-note"><b>● LIVE MODE</b>Data and chat sync live across every signed-in device. Sign-in is handled by Firebase Authentication.</div>
+  <div class="acct"><button id="photoBtn2" type="button">📷 Change profile photo</button><button id="pwBtn2" type="button">🔑 Change password</button><button id="signOutBtn2" type="button">Sign out</button></div>
 </aside>
 <main class="main">
 <header class="topbar">
   <div style="display:flex;align-items:center;gap:12px"><button class="mobile-menu" id="menuBtn" aria-label="Open menu">☰</button><div class="crumb">SHADOW GARDEN / <b id="crumb">OVERVIEW</b></div></div>
-  <div class="top-actions"><input id="globalSearch" class="search" placeholder="Search this page…" aria-label="Search current page"><span class="status">● SYSTEM ONLINE</span><div class="userchip"><span>Signed in as <b id="whoami"></b></span><button id="pwBtn">Password</button><button id="signOutBtn">Sign out</button></div></div>
+  <div class="top-actions"><input id="globalSearch" class="search" placeholder="Search this page…" aria-label="Search current page"><span class="status">● SYSTEM ONLINE</span><div class="userchip"><span>Signed in as <b id="whoami"></b></span><button id="photoBtn">Photo</button><button id="pwBtn">Password</button><button id="signOutBtn">Sign out</button></div></div>
 </header>
 <div class="content">
 <section class="page active" id="page-overview">
   <div class="sg-lines" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div id="overviewNotice"></div>
   <div class="hero"><div class="hero-copy"><div class="eyebrow">Discipline creates advantage</div><h1>SHADOW <span>GARDEN</span></h1><p>A strategy and intelligence workspace built around clear reporting, careful verification, and disciplined decisions.</p><div class="actions"><button class="btn" data-goto="missions">＋ Create mission</button><button class="btn ghost" data-goto="reports">Review reports ↗</button></div></div></div>
   <div class="stats">
     <div class="stat"><div class="label">REGISTERED AGENTS</div><div class="value" id="statAgents">5</div><div class="hint">In directory</div></div>
@@ -100,6 +139,8 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
     <div><div class="section-head"><div><h2>Recent missions</h2><p>Latest activity in your workspace</p></div><button class="small-btn" data-goto="missions">All missions →</button></div><div class="panel card"><div class="list" id="recentMissions"></div></div></div>
     <div><div class="section-head"><div><h2>Latest reports</h2><p>Evidence before assumptions</p></div><button class="small-btn" data-goto="reports">All reports →</button></div><div class="panel card"><div class="list" id="recentReports"></div></div></div>
   </div>
+<div id="boardWrap" style="margin-top:22px"><div class="section-head"><div><h2>Leaderboard</h2><p>10 pts per completed mission · 5 per verified report · 3 per corroborated report</p></div></div><div class="panel card"><div class="list" id="boardList"></div></div></div>
+  <div id="activityWrap" style="margin-top:22px"><div class="section-head"><div><h2>Activity feed</h2><p>What has been happening in the guild</p></div></div><div class="panel card"><div class="list" id="activityList"></div></div></div>
 </section>
 <section class="page" id="page-agents">
   <div class="section-head"><div><div class="eyebrow">Personnel directory</div><h2>Agents</h2><p>Manage roles, assignments, and status.</p></div><button class="btn" id="addAgentBtn">＋ Add agent</button></div>
@@ -108,7 +149,7 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
 </section>
 <section class="page" id="page-missions">
   <div class="section-head"><div><div class="eyebrow">Operations board</div><h2>Missions</h2><p>Track objectives, assignments, and outcomes.</p></div><button class="btn" id="addMissionBtn">＋ New mission</button></div>
-  <div class="card panel hidden" id="missionFormCard"><h3>Create mission</h3><form id="missionForm"><div class="form-grid"><div class="field"><label for="missionTitle">Mission title</label><input id="missionTitle" required maxlength="100" placeholder="e.g. Verify source report"></div><div class="field"><label for="missionAgent">Assigned agent</label><select id="missionAgent"></select></div><div class="field"><label for="missionPriority">Priority</label><select id="missionPriority"><option>Normal</option><option>High</option><option>Critical</option></select></div><div class="field"><label for="missionStatus">Status</label><select id="missionStatus"><option>Planned</option><option>In progress</option><option>Completed</option><option>On hold</option></select></div></div><div class="field"><label for="missionObjective">Objective</label><textarea id="missionObjective" required maxlength="1000" placeholder="Describe the task and what counts as a completed result."></textarea></div><div class="actions"><button class="btn" type="submit">Save mission</button><button class="small-btn" type="button" id="cancelMission">Cancel</button></div></form></div>
+  <div class="card panel hidden" id="missionFormCard"><h3>Create mission</h3><form id="missionForm"><div class="form-grid"><div class="field"><label for="missionTitle">Mission title</label><input id="missionTitle" required maxlength="100" placeholder="e.g. Verify source report"></div><div class="field"><label for="missionAgent">Assigned agent</label><select id="missionAgent"></select></div><div class="field"><label for="missionPriority">Priority</label><select id="missionPriority"><option>Normal</option><option>High</option><option>Critical</option></select></div><div class="field"><label for="missionDue">Due date (optional)</label><input type="date" id="missionDue"></div><div class="field"><label for="missionStatus">Status</label><select id="missionStatus"><option>Planned</option><option>In progress</option><option>Completed</option><option>On hold</option></select></div></div><div class="field"><label for="missionObjective">Objective</label><textarea id="missionObjective" required maxlength="1000" placeholder="Describe the task and what counts as a completed result."></textarea></div><div class="actions"><button class="btn" type="submit">Save mission</button><button class="small-btn" type="button" id="cancelMission">Cancel</button></div></form></div>
   <div class="card panel"><div class="toolbar" style="margin-bottom:14px"><select id="missionFilter" class="search" style="width:auto"><option value="All">All statuses</option><option>Planned</option><option>In progress</option><option>Completed</option><option>On hold</option></select><span class="muted" id="missionCount"></span></div><div id="missionsList" class="list"></div></div>
 </section>
 <section class="page" id="page-reports">
@@ -116,14 +157,26 @@ body{background:radial-gradient(ellipse at 80% -10%,#2a1b4d 0,transparent 38%),r
   <div class="card panel hidden" id="reportFormCard"><h3>Submit report</h3><form id="reportForm"><div class="form-grid"><div class="field"><label for="reportTitle">Report title</label><input id="reportTitle" required maxlength="100" placeholder="Short, factual title"></div><div class="field"><label for="reportAgent">Submitted by</label><select id="reportAgent"></select></div><div class="field"><label for="reportConfidence">Confidence</label><select id="reportConfidence"><option>Unverified</option><option>Low</option><option>Moderate</option><option>High</option></select></div><div class="field"><label for="reportStatus">Verification status</label><select id="reportStatus"><option>Unverified</option><option>Corroborated</option><option>Verified</option><option>Contradicted</option></select></div></div><div class="field"><label for="reportBody">Report details</label><textarea id="reportBody" required maxlength="3000" placeholder="Separate direct observations from interpretations."></textarea></div><div class="field"><label for="reportSource">Source notes (avoid private or sensitive details)</label><input id="reportSource" maxlength="300" placeholder="e.g. first-hand account, public post, independent source"></div><div class="field"><label for="reportFiles">Attach files (optional, up to about 700 KB each; photos are shrunk automatically)</label><input id="reportFiles" type="file" multiple></div><div class="actions"><button class="btn" type="submit">Save report</button><button class="small-btn" type="button" id="cancelReport">Cancel</button></div></form></div>
   <div class="card panel"><div class="toolbar" style="margin-bottom:14px"><select id="reportFilter" class="search" style="width:auto"><option value="All">All verification statuses</option><option>Unverified</option><option>Corroborated</option><option>Verified</option><option>Contradicted</option></select><span class="muted" id="reportCount"></span></div><div class="table-wrap"><table class="table"><thead><tr><th>Report</th><th>Agent</th><th>Confidence</th><th>Status</th><th>Action</th></tr></thead><tbody id="reportsTable"></tbody></table></div></div>
 </section>
+<section class="page" id="page-notices">
+  <div class="section-head"><div><div class="eyebrow">Guild announcements</div><h2>Notice board</h2><p>Announcements and shared materials from the guild leader.</p></div></div>
+  <div class="card panel" id="noticeFormCard"><h3>Post an announcement</h3><form id="noticeForm"><div class="field"><label for="noticeTitle">Title</label><input id="noticeTitle" required maxlength="100" placeholder="e.g. Meeting tonight at 8"></div><div class="field"><label for="noticeText">Message</label><textarea id="noticeText" required maxlength="3000" placeholder="Write the announcement. Links are clickable."></textarea></div><div class="field"><label for="noticePoll">Poll options (optional: one per line, 2 to 6)</label><textarea id="noticePoll" rows="3" placeholder="Tuesday&#10;Thursday&#10;Saturday"></textarea></div><div class="field"><label for="noticeFiles">Attach files (optional, about 700 KB each)</label><input id="noticeFiles" type="file" multiple></div><label style="display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px;margin:6px 0 12px"><input type="checkbox" id="noticePin"> Pin to the top</label><div class="actions"><button class="btn" type="submit">Post announcement</button></div></form></div>
+  <div id="noticesList" class="list" style="margin-top:16px;gap:14px"></div>
+</section>
 <section class="page" id="page-files">
   <div class="section-head"><div><div class="eyebrow">Shared archive</div><h2>Files</h2><p>Upload files everyone in the guild can open. Attach files to a report from the Reports page.</p></div><button class="btn" id="addFileBtn">＋ Upload files</button></div>
   <div class="card panel"><div id="filesList" class="list"></div></div>
 </section>
+<input type="file" id="photoInput" accept="image/*" hidden>
+<div id="pwSheet" class="sheet"><div class="sheet-card"><div class="chead" style="margin:0"><b>Change password</b><button class="small-btn" id="pwClose" type="button">Close</button></div><div class="field"><label for="pwCur">Current password</label><input id="pwCur" type="password" autocomplete="current-password"></div><div class="field"><label for="pwNew">New password (at least 8 characters)</label><input id="pwNew" type="password" autocomplete="new-password"></div><div class="field"><label for="pwNew2">Repeat new password</label><input id="pwNew2" type="password" autocomplete="new-password"></div><div id="pwMsg" class="muted" style="min-height:18px;font-size:13px"></div><div class="actions"><button class="btn" id="pwSave" type="button">Update password</button></div></div></div>
+<div id="notesSheet" class="sheet"><div class="sheet-card"><div class="chead" style="margin:0"><b id="nsTitle"></b><button class="small-btn" id="nsClose" type="button">Close</button></div><div id="nsList" class="sheet-list"></div><div class="chat-compose"><textarea id="nsInput" maxlength="500" rows="2" placeholder="Add a progress note…"></textarea><button class="btn" id="nsSend" type="button">Post</button></div></div></div>
 <input type="file" id="fileInput" multiple hidden><input type="file" id="attachInput" multiple hidden>
 <section class="page" id="page-chat">
   <div class="section-head"><div><div class="eyebrow">Open channel</div><h2>Guild chat</h2><p>Visible to every member. Tag someone with @codename, or everyone with @everyone.</p></div></div>
   <div class="card panel"><div id="onlineBar" class="onlinebar"></div><div id="chatList" class="chat-list"></div><div class="chat-tags" id="chatTags"></div><div class="chat-compose"><textarea id="chatInput" maxlength="500" rows="2" placeholder="Message the guild… use @codename to tag"></textarea><button class="btn" id="chatSend">Send</button></div></div>
+</section>
+<section class="page" id="page-dms">
+  <div class="section-head"><div><div class="eyebrow">Private channel</div><h2>Messages</h2><p>One-to-one messages between the guild leader and each agent.</p></div></div>
+  <div class="card panel"><div class="field" id="dmPickWrap"><label for="dmPick">Conversation with</label><select id="dmPick"></select></div><div id="dmList" class="chat-list"></div><div class="chat-compose"><textarea id="dmInput" maxlength="500" rows="2" placeholder="Write a private message…"></textarea><button class="btn" id="dmSend">Send</button></div></div>
 </section>
 <section class="page" id="page-resources">
   <div class="section-head"><div><div class="eyebrow">Field manual</div><h2>Resources & rules</h2><p>Simple standards for reliable analysis.</p></div></div>
@@ -156,7 +209,7 @@ const firebaseConfig={
 const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),fs=getFirestore(fbApp);
 const $=i=>document.getElementById(i);
 const EM='@shadowgarden.app',toEmail=u=>u+EM;
-let fileMeta=[],attachTarget=null,presence={},presSig='',hbT=null,beatName='',announced=false,role='owner',owner=null,myAgent=null,profile=null,uName='',ownerName='',rosterAgents=[],chatMsgs=[],unsubs=[],busy=false;
+let mnotes=[],dms=[],acts=[],votes=[],reads=[],scores={},ownerAv='',dmWith='',metaT=null,metaSig='',nsMission=null,notices=[],attachKind='report',fileMeta=[],attachTarget=null,presence={},presSig='',hbT=null,beatName='',announced=false,role='owner',owner=null,myAgent=null,profile=null,uName='',ownerName='',rosterAgents=[],chatMsgs=[],unsubs=[],busy=false;
 const errMsg=e=>e&&e.code==='permission-denied'?'Not allowed. Check the Firestore rules.':(e&&e.message)||'Something went wrong.';
 const col=n=>collection(fs,'networks',owner,n);
 const netDoc=()=>doc(fs,'networks',owner);
@@ -174,8 +227,8 @@ function id(){return 'id-'+Date.now().toString(36)+'-'+Math.random().toString(36
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',2600)}
 function badge(text){let c=text==='Verified'||text==='Trusted'||text==='Active'?'':text==='Contradicted'||text==='Restricted'||text==='Critical'?'red':text==='Unverified'||text==='Verify reports'||text==='High'?'warn':'';return `<span class="pill ${c}">${esc(text)}</span>`}
-function agentCard(a){return `<article class="card agent searchable"><div class="agent-top"><div class="avatar">${a.name.toLowerCase().includes('rat')?'♟':'♜'}</div><div><h3>${esc(a.name)}</h3><div class="role">${esc(a.role)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:13px">${isOn(a.id)?'<span class="pill on">● online</span>':''}${badge(a.status)}${badge(a.trust)}${a.login?'<span class="pill">🔑 '+esc(a.login)+'</span>':''}</div><p>${esc(a.notes||'No notes recorded.')}</p><div class="card-actions"><button class="small-btn" onclick="editAgent('${a.id}')">Edit</button><button class="small-btn" onclick="assignAgent('${a.id}')">Assign mission</button><button class="small-btn" onclick="deleteAgent('${a.id}')">Delete</button></div></article>`}
-function missionRow(m){return `<div class="list-row searchable"><div><strong>${esc(m.title)}</strong><small>${esc(m.agentName||'Unassigned')} · ${esc(m.priority)} priority</small><small>${esc(m.objective)}</small></div><div style="display:grid;gap:7px;justify-items:end">${badge(m.status)}<div style="display:flex;gap:6px"><button class="small-btn" onclick="cycleMission('${m.id}')">Update</button><button class="small-btn" onclick="deleteMission('${m.id}')">Delete</button></div></div></div>`}
+function agentCard(a){return `<article class="card agent searchable"><div class="agent-top"><div class="avatar">${okAv(a.avatar)?avTag(a.avatar):(a.name.toLowerCase().includes('rat')?'♟':'♜')}</div><div><h3>${esc(a.name)}</h3><div class="role">${esc(a.role)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:13px">${isOn(a.id)?'<span class="pill on">● online</span>':''}${rankPill(a.id)}${badge(a.status)}${badge(a.trust)}${a.login?'<span class="pill">🔑 '+esc(a.login)+'</span>':''}</div><p>${esc(a.notes||'No notes recorded.')}</p><div class="card-actions"><button class="small-btn" onclick="editAgent('${a.id}')">Edit</button><button class="small-btn" onclick="assignAgent('${a.id}')">Assign mission</button><button class="small-btn" onclick="deleteAgent('${a.id}')">Delete</button></div></article>`}
+function missionRow(m){return `<div class="list-row searchable"><div><strong>${esc(m.title)}</strong><small>${esc(m.agentName||'Unassigned')} · ${esc(m.priority)} priority${dueTag(m)}</small><small>${esc(m.objective)}</small></div><div style="display:grid;gap:7px;justify-items:end">${badge(m.status)}<div style="display:flex;gap:6px"><button class="small-btn" onclick="openMissionNotes('${m.id}')">💬 ${mnotes.filter(x=>x.missionId===m.id).length}</button><button class="small-btn" onclick="cycleMission('${m.id}')">Update</button><button class="small-btn" onclick="deleteMission('${m.id}')">Delete</button></div></div></div>`}
 function reportRow(r){return `<tr class="searchable"><td><strong>${esc(r.title)}</strong><div class="muted" style="font-size:11px">${esc(r.date||'')}</div><div style="font-size:12px;margin-top:4px">${esc(r.body)}</div><div class="muted" style="font-size:11px;margin-top:4px">Source notes: ${esc(r.source||'None')}</div>${attachHtml(r)}</td><td>${esc(r.agentName||'Unassigned')}</td><td>${badge(r.confidence)}</td><td>${badge(r.status)}</td><td><button class="small-btn" onclick="attachToReport('${r.id}')">📎 Attach</button> <button class="small-btn" onclick="cycleReport('${r.id}')">Update</button> <button class="small-btn" onclick="deleteReport('${r.id}')">Delete</button></td></tr>`}
 function empty(msg){return `<div class="empty">${msg}</div>`}
 function render(){
@@ -259,18 +312,18 @@ $('agentForm').onsubmit=async e=>{e.preventDefault();if(role!=='owner')return;
     newLogin=login;
    }
   }else if(old&&old.login){if(old.uid)await deleteDoc(doc(fs,'users',old.uid)).catch(()=>{});uid='';newLogin=''}
-  const a={id:nid,name:$('agentName').value.trim(),role:$('agentRole').value.trim(),status:$('agentStatus').value,trust:$('agentTrust').value,notes:$('agentNotes').value.trim(),login:newLogin,uid,created:(old&&old.created)||Date.now()};
-  await setDoc(doc(col('agents'),nid),a);
+  const a={id:nid,name:$('agentName').value.trim(),role:$('agentRole').value.trim(),status:$('agentStatus').value,trust:$('agentTrust').value,notes:$('agentNotes').value.trim(),login:newLogin,uid,avatar:(old&&old.avatar)||'',created:(old&&old.created)||Date.now()};
+  await setDoc(doc(col('agents'),nid),a);if(!old)logAct('Agent registered: '+a.name);
   await syncRoster(db.agents.filter(x=>x.id!==nid).concat([a]));
   closeForm('agentFormCard');toast('Agent saved.');
  }catch(err){toast(errMsg(err))}
 };
 window.deleteAgent=async function(aid){if(role!=='owner')return;if(!confirm('Delete this agent? Existing reports and missions will remain.'))return;const a=db.agents.find(x=>x.id===aid);try{if(a&&a.uid)await deleteDoc(doc(fs,'users',a.uid)).catch(()=>{});await deleteDoc(doc(col('agents'),aid));await syncRoster(db.agents.filter(x=>x.id!==aid));toast('Agent deleted.')}catch(err){toast(errMsg(err))}};
-$('missionForm').onsubmit=async e=>{e.preventDefault();if(role!=='owner')return;const a=db.agents.find(x=>x.id===$('missionAgent').value);const m={id:id(),title:$('missionTitle').value.trim(),agentId:a?.id||'',agentName:a?.name||'Unassigned',priority:$('missionPriority').value,status:$('missionStatus').value,objective:$('missionObjective').value.trim(),date:new Date().toLocaleDateString(),created:Date.now()};try{await setDoc(doc(col('missions'),m.id),m);e.target.reset();closeForm('missionFormCard');toast('Mission created.')}catch(err){toast(errMsg(err))}};
-window.cycleMission=async function(mid){const m=db.missions.find(x=>x.id===mid);if(!m)return;if(role==='agent'&&m.status==='Completed'){toast('Completed missions can only be changed by the guild leader.');return}const states=['Planned','In progress','Completed','On hold'];try{await updateDoc(doc(col('missions'),mid),{status:states[(states.indexOf(m.status)+1)%states.length]});toast('Mission status updated.')}catch(err){toast(errMsg(err))}};
+$('missionForm').onsubmit=async e=>{e.preventDefault();if(role!=='owner')return;const a=db.agents.find(x=>x.id===$('missionAgent').value);const m={id:id(),title:$('missionTitle').value.trim(),agentId:a?.id||'',agentName:a?.name||'Unassigned',priority:$('missionPriority').value,status:$('missionStatus').value,objective:$('missionObjective').value.trim(),due:$('missionDue').value||'',date:new Date().toLocaleDateString(),created:Date.now()};try{await setDoc(doc(col('missions'),m.id),m);e.target.reset();closeForm('missionFormCard');toast('Mission created.');logAct('Mission created: '+m.title+' → '+m.agentName)}catch(err){toast(errMsg(err))}};
+window.cycleMission=async function(mid){const m=db.missions.find(x=>x.id===mid);if(!m)return;if(role==='agent'&&m.status==='Completed'){toast('Completed missions can only be changed by the guild leader.');return}const states=['Planned','In progress','Completed','On hold'];try{const nx=states[(states.indexOf(m.status)+1)%states.length];await updateDoc(doc(col('missions'),mid),{status:nx});toast('Mission status updated.');logAct(actor()+' set mission "'+m.title+'" to '+nx)}catch(err){toast(errMsg(err))}};
 window.deleteMission=async function(mid){if(role!=='owner')return;if(!confirm('Delete this mission?'))return;try{await deleteDoc(doc(col('missions'),mid));toast('Mission deleted.')}catch(err){toast(errMsg(err))}};
-$('reportForm').onsubmit=async e=>{e.preventDefault();const a=role==='agent'?db.agents.find(x=>x.id===myAgent):db.agents.find(x=>x.id===$('reportAgent').value);const conf=$('reportConfidence').value;const r={id:id(),title:$('reportTitle').value.trim().slice(0,100),agentId:a?.id||'',agentName:a?.name||'Unassigned',confidence:conf,status:role==='agent'?'Unverified':$('reportStatus').value,body:$('reportBody').value.trim().slice(0,3000),source:$('reportSource').value.trim().slice(0,300),date:new Date().toLocaleString(),created:Date.now()};if(role==='agent'){if(!a){toast('Your agent record is missing.');return}if(!['Unverified','Low','Moderate','High'].includes(r.confidence))r.confidence='Unverified'}const picked=[...($('reportFiles').files||[])];try{await setDoc(doc(col('reports'),r.id),r);e.target.reset();closeForm('reportFormCard');toast('Report saved.');if(picked.length)await uploadMany(picked,{reportId:r.id,agentId:r.agentId||''})}catch(err){toast(errMsg(err))}};
-window.cycleReport=async function(rid){if(role!=='owner')return;const r=db.reports.find(x=>x.id===rid);if(!r)return;const states=['Unverified','Corroborated','Verified','Contradicted'];try{await updateDoc(doc(col('reports'),rid),{status:states[(states.indexOf(r.status)+1)%states.length]});toast('Report verification updated.')}catch(err){toast(errMsg(err))}};
+$('reportForm').onsubmit=async e=>{e.preventDefault();const a=role==='agent'?db.agents.find(x=>x.id===myAgent):db.agents.find(x=>x.id===$('reportAgent').value);const conf=$('reportConfidence').value;const r={id:id(),title:$('reportTitle').value.trim().slice(0,100),agentId:a?.id||'',agentName:a?.name||'Unassigned',confidence:conf,status:role==='agent'?'Unverified':$('reportStatus').value,body:$('reportBody').value.trim().slice(0,3000),source:$('reportSource').value.trim().slice(0,300),date:new Date().toLocaleString(),created:Date.now()};if(role==='agent'){if(!a){toast('Your agent record is missing.');return}if(!['Unverified','Low','Moderate','High'].includes(r.confidence))r.confidence='Unverified'}const picked=[...($('reportFiles').files||[])];try{await setDoc(doc(col('reports'),r.id),r);e.target.reset();closeForm('reportFormCard');toast('Report saved.');logAct(actor()+' filed report: '+r.title);if(picked.length)await uploadMany(picked,{reportId:r.id,agentId:r.agentId||''})}catch(err){toast(errMsg(err))}};
+window.cycleReport=async function(rid){if(role!=='owner')return;const r=db.reports.find(x=>x.id===rid);if(!r)return;const states=['Unverified','Corroborated','Verified','Contradicted'];try{const nx=states[(states.indexOf(r.status)+1)%states.length];await updateDoc(doc(col('reports'),rid),{status:nx});toast('Report verification updated.');logAct('Report "'+r.title+'" marked '+nx)}catch(err){toast(errMsg(err))}};
 window.deleteReport=async function(rid){if(role!=='owner')return;if(!confirm('Delete this report?'))return;try{await deleteDoc(doc(col('reports'),rid));toast('Report deleted.')}catch(err){toast(errMsg(err))}};
 $('importFile').onchange=async e=>{const f=e.target.files[0];if(!f||role!=='owner')return;try{const parsed=JSON.parse(await f.text());if(!Array.isArray(parsed.agents)||!Array.isArray(parsed.missions)||!Array.isArray(parsed.reports))throw new Error('Invalid backup');if(!confirm('Import will replace ALL guild data for everyone. Agent logins are not imported. Continue?'))return;await replaceAll(parsed);toast('Backup imported.')}catch(err){toast('Could not import this backup.')}e.target.value=''};
 $('resetBtn').onclick=async()=>{if(role!=='owner')return;if(confirm('Reset to the original demo agents and delete all missions and reports for everyone? Custom agents and their logins will be removed.')){try{await replaceAll(starter);toast('Demo data reset.')}catch(err){toast(errMsg(err))}}};
@@ -290,8 +343,8 @@ const fmtSize=s=>s<1024?s+' B':Math.round(s/1024)+' KB';
 const canDel=f=>role==='owner'||f.byId===selfIdF();
 const fIcon=f=>/^image\//.test(f.type)?'🖼':/pdf/.test(f.type)?'📄':'📎';
 function attachHtml(r){const fl=fileMeta.filter(f=>f.reportId===r.id);if(!fl.length)return '';return '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">'+fl.map(f=>'<span style="display:inline-flex;gap:3px"><button class="small-btn" onclick="openFile(\''+f.id+'\')">'+fIcon(f)+' '+esc(f.name)+' <span class="muted">'+fmtSize(f.size)+'</span></button>'+(canDel(f)?'<button class="small-btn" aria-label="Remove file" onclick="deleteFile(\''+f.id+'\')">✕</button>':'')+'</span>').join('')+'</div>'}
-function renderFiles(){const el=$('filesList');if(!el)return;const l=fileMeta.filter(f=>f.shared);el.innerHTML=l.map(f=>'<div class="list-row searchable"><div><strong>'+fIcon(f)+' '+esc(f.name)+'</strong><small>'+esc(f.by||'')+' · '+fmtSize(f.size)+' · '+esc(fmtTime(+f.ts||0))+'</small></div><div style="display:flex;gap:6px"><button class="small-btn" onclick="openFile(\''+f.id+'\')">Open</button>'+(canDel(f)?'<button class="small-btn" onclick="deleteFile(\''+f.id+'\')">Delete</button>':'')+'</div></div>').join('')||empty('No files yet. Upload one to share it with the guild.');applySearch()}
-function filesChanged(){renderFiles();render()}
+function renderFiles(){const el=$('filesList');if(!el)return;const l=fileMeta.filter(f=>f.shared&&!f.noticeId);el.innerHTML=l.map(f=>'<div class="list-row searchable"><div><strong>'+fIcon(f)+' '+esc(f.name)+'</strong><small>'+esc(f.by||'')+' · '+fmtSize(f.size)+' · '+esc(fmtTime(+f.ts||0))+'</small></div><div style="display:flex;gap:6px"><button class="small-btn" onclick="openFile(\''+f.id+'\')">Open</button>'+(canDel(f)?'<button class="small-btn" onclick="deleteFile(\''+f.id+'\')">Delete</button>':'')+'</div></div>').join('')||empty('No files yet. Upload one to share it with the guild.');applySearch()}
+function filesChanged(){renderFiles();renderNotices();render()}
 const readB64=file=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});
 async function prepFile(file){
  let blob=file,type=file.type||'application/octet-stream',name=file.name||'file';
@@ -305,15 +358,16 @@ async function prepFile(file){
 }
 async function saveFile(file,o){
  const f=await prepFile(file),fid=id();
- const meta={id:fid,name:f.name,type:f.type,size:f.size,by:beatName||capw(uName),byId:selfIdF(),shared:!!o.shared,reportId:o.reportId||'',agentId:o.agentId||'',ts:Date.now()};
+ const meta={id:fid,name:f.name,type:f.type,size:f.size,by:beatName||capw(uName),byId:selfIdF(),shared:!!o.shared,reportId:o.reportId||'',agentId:o.agentId||'',noticeId:o.noticeId||'',ts:Date.now()};
  await setDoc(doc(col('files'),fid),meta);
  try{await setDoc(doc(col('filedata'),fid),{data:f.b64})}catch(e){await deleteDoc(doc(col('files'),fid)).catch(()=>{});throw e}
+ logAct(actor()+' uploaded '+f.name);
 }
 async function uploadMany(list,o){for(let i=0;i<list.length;i++){try{toast('Uploading '+(i+1)+' of '+list.length+'…');await saveFile(list[i],o);toast('Uploaded '+list[i].name)}catch(err){toast(errMsg(err))}}}
 $('addFileBtn').onclick=()=>$('fileInput').click();
 $('fileInput').onchange=async e=>{const l=[...e.target.files];e.target.value='';await uploadMany(l,{shared:true})};
-window.attachToReport=rid=>{attachTarget=rid;$('attachInput').click()};
-$('attachInput').onchange=async e=>{const l=[...e.target.files];e.target.value='';const r=db.reports.find(x=>x.id===attachTarget);if(!r){toast('Report not found.');return}await uploadMany(l,{reportId:r.id,agentId:r.agentId||''})};
+window.attachToReport=rid=>{attachTarget=rid;attachKind='report';$('attachInput').click()};
+$('attachInput').onchange=async e=>{const l=[...e.target.files];e.target.value='';if(attachKind==='notice'){if(role==='owner')await uploadMany(l,{shared:true,noticeId:attachTarget});return}const r=db.reports.find(x=>x.id===attachTarget);if(!r){toast('Report not found.');return}await uploadMany(l,{reportId:r.id,agentId:r.agentId||''})};
 function showViewer(url,m){const old=$('fview');if(old)old.remove();const v=document.createElement('div');v.id='fview';v.innerHTML='<img alt=""><div class="actions"><a class="btn" download>Download</a><button class="small-btn" type="button">Close</button></div>';v.querySelector('img').src=url;const a=v.querySelector('a');a.href=url;a.download=m.name;const close=()=>{v.remove();URL.revokeObjectURL(url)};v.querySelector('button').onclick=close;v.addEventListener('click',e=>{if(e.target===v)close()});document.body.appendChild(v)}
 window.openFile=async function(fid){const m=fileMeta.find(x=>x.id===fid);if(!m)return;try{toast('Loading file…');const s=await getDoc(doc(col('filedata'),fid));if(!s.exists()){toast('File data is missing.');return}const bin=atob(s.data().data),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);const url=URL.createObjectURL(new Blob([u8],{type:m.type||'application/octet-stream'}));if(/^image\//.test(m.type)){showViewer(url,m)}else{const a=document.createElement('a');a.href=url;a.download=m.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}}catch(err){toast(errMsg(err))}};
 window.deleteFile=async function(fid){const m=fileMeta.find(x=>x.id===fid);if(!m||!canDel(m))return;if(!confirm('Delete this file?'))return;try{await deleteDoc(doc(col('filedata'),fid)).catch(()=>{});await deleteDoc(doc(col('files'),fid));toast('File deleted.')}catch(err){toast(errMsg(err))}};
@@ -324,17 +378,28 @@ function startSync(){
  const byCreated=(a,b)=>(a.created||0)-(b.created||0);
  const ownerMode=role==='owner';
  const A=ownerMode?col('agents'):null;
- if(ownerMode)unsubs.push(onSnapshot(A,s=>{db.agents=s.docs.map(d=>d.data()).sort(byCreated);render();chatTick()},bad));
+ if(ownerMode)unsubs.push(onSnapshot(A,s=>{db.agents=s.docs.map(d=>d.data()).sort(byCreated);render();chatTick();renderDmPick();syncMeta()},bad));
  else unsubs.push(onSnapshot(doc(fs,'networks',owner,'agents',myAgent),d=>{db.agents=d.exists()?[d.data()]:[];render();if(!announced&&d.exists()){announced=true;startPresence(d.data().name)}},bad));
  const mq=ownerMode?col('missions'):query(col('missions'),where('agentId','==',myAgent));
  const rq=ownerMode?col('reports'):query(col('reports'),where('agentId','==',myAgent));
- unsubs.push(onSnapshot(mq,s=>{db.missions=s.docs.map(d=>d.data()).sort(byCreated);render()},bad));
- unsubs.push(onSnapshot(rq,s=>{db.reports=s.docs.map(d=>d.data()).sort(byCreated);render()},bad));
- unsubs.push(onSnapshot(netDoc(),d=>{const x=d.data()||{};rosterAgents=x.roster||[];if(x.ownerName)ownerName=x.ownerName;chatTick()},bad));
+ unsubs.push(onSnapshot(mq,s=>{db.missions=s.docs.map(d=>d.data()).sort(byCreated);render();syncMeta()},bad));
+ unsubs.push(onSnapshot(rq,s=>{db.reports=s.docs.map(d=>d.data()).sort(byCreated);render();syncMeta()},bad));
+ unsubs.push(onSnapshot(netDoc(),d=>{const x=d.data()||{};rosterAgents=x.roster||[];if(x.ownerName)ownerName=x.ownerName;scores=x.scores||{};ownerAv=x.ownerAv||'';renderBoard();chatTick();renderDmPick()},bad));
  if(ownerMode)unsubs.push(onSnapshot(col('files'),s=>{fileMeta=s.docs.map(d=>d.data()).sort((a,b)=>(b.ts||0)-(a.ts||0));filesChanged()},bad));
  else{const m1={},m2={},mg=()=>{fileMeta=Object.values(Object.assign({},m1,m2)).sort((a,b)=>(b.ts||0)-(a.ts||0));filesChanged()};
   unsubs.push(onSnapshot(query(col('files'),where('shared','==',true)),s=>{for(const k in m1)delete m1[k];s.docs.forEach(d=>m1[d.id]=d.data());mg()},bad));
   unsubs.push(onSnapshot(query(col('files'),where('agentId','==',myAgent)),s=>{for(const k in m2)delete m2[k];s.docs.forEach(d=>m2[d.id]=d.data());mg()},bad))}
+ unsubs.push(onSnapshot(col('votes'),s=>{votes=s.docs.map(d=>d.data());renderNotices()},bad));
+ if(ownerMode){
+  unsubs.push(onSnapshot(col('mnotes'),s=>{mnotes=s.docs.map(d=>d.data());render();renderNotesSheet()},bad));
+  unsubs.push(onSnapshot(col('dms'),s=>{dms=s.docs.map(d=>d.data());renderDMs()},bad));
+  unsubs.push(onSnapshot(query(col('activity'),orderBy('ts','desc'),limit(40)),s=>{acts=s.docs.map(d=>d.data());renderActivity()},bad));
+  unsubs.push(onSnapshot(col('reads'),s=>{reads=s.docs.map(d=>d.data());renderNotices()},bad));
+ }else{
+  unsubs.push(onSnapshot(query(col('mnotes'),where('agentId','==',myAgent)),s=>{mnotes=s.docs.map(d=>d.data());render();renderNotesSheet()},bad));
+  unsubs.push(onSnapshot(query(col('dms'),where('agentId','==',myAgent)),s=>{dms=s.docs.map(d=>d.data());renderDMs()},bad));
+ }
+ unsubs.push(onSnapshot(query(col('notices'),orderBy('created','desc'),limit(100)),s=>{notices=s.docs.map(d=>d.data());renderNotices();if(noticesActive()){noticeSeenSet(Date.now());markRead()}},bad));
  unsubs.push(onSnapshot(col('presence'),s=>{presence={};s.docs.forEach(d=>presence[d.id]=d.data());renderPresence();if(presChanged())render()},bad));
  unsubs.push(onSnapshot(query(col('chat'),orderBy('ts','desc'),limit(300)),s=>{chatMsgs=s.docs.map(d=>d.data()).reverse();chatTick()},bad));
 }
@@ -344,10 +409,10 @@ $('auFoot').addEventListener('click',e=>{if(e.target.id==='auSwitch'){e.preventD
 let mode='login',fails=0,lockUntil=0;
 function enter(name,fresh){
  role=profile.role==='agent'?'agent':'owner';owner=profile.owner;myAgent=profile.agentId||null;uName=name;
- announced=false;ownerName=role==='owner'?name:'';db={agents:[],missions:[],reports:[]};chatMsgs=[];rosterAgents=[];fileMeta=[];
+ announced=false;ownerName=role==='owner'?name:'';db={agents:[],missions:[],reports:[]};chatMsgs=[];rosterAgents=[];fileMeta=[];notices=[];mnotes=[];dms=[];acts=[];votes=[];reads=[];scores={};ownerAv='';metaSig='';nsMission=null;dmWith=role==='agent'?myAgent:'';
  document.body.classList.toggle('agent-mode',role==='agent');
  $('whoami').textContent=name+(role==='agent'?' (agent)':'');
- document.body.classList.remove('locked');
+ document.body.classList.remove('locked');setWatermark();
  showPage('overview');render();idleReset();startSync();if(role==='owner')startPresence(capw(name));
  if(fresh){const cap=capw(name);welcome((role==='agent'?(/^agent\b/i.test(name)?'':'AGENT '):'GUILD LEADER ')+cap.toUpperCase())}
 }
@@ -379,8 +444,10 @@ $('auSubmit').onclick=async()=>{const msg=$('auMsg'),name=$('auUser').value.trim
  }catch(err){msg.textContent=errMsg(err)}
  finally{busy=false;$('auSubmit').disabled=false}
 };
-$('signOutBtn').onclick=async()=>{await stopPresence();presence={};presSig='';stopSync();try{await signOut(auth)}catch(e){}role='owner';owner=null;myAgent=null;profile=null;db={agents:[],missions:[],reports:[]};chatMsgs=[];fileMeta=[];document.body.classList.add('locked');$('auUser').value='';authMode('login')};
-$('pwBtn').onclick=async()=>{const cur=prompt('Current password:');if(!cur)return;const nw=prompt('New password (min 8 characters):');if(!nw)return;if(nw.length<8){toast('Password must be at least 8 characters.');return}try{const u=auth.currentUser;await reauthenticateWithCredential(u,EmailAuthProvider.credential(u.email,cur));await updatePassword(u,nw);toast('Password updated.')}catch(err){toast(err.code==='auth/invalid-credential'||err.code==='auth/wrong-password'?'Current password is incorrect.':errMsg(err))}};
+$('signOutBtn').onclick=async()=>{await stopPresence();presence={};presSig='';stopSync();try{await signOut(auth)}catch(e){}role='owner';owner=null;myAgent=null;profile=null;db={agents:[],missions:[],reports:[]};chatMsgs=[];fileMeta=[];notices=[];mnotes=[];dms=[];acts=[];votes=[];reads=[];scores={};ownerAv='';dmWith='';document.body.classList.add('locked');uName='';setWatermark();$('auUser').value='';authMode('login')};
+$('pwBtn').onclick=()=>{['pwCur','pwNew','pwNew2'].forEach(i=>$(i).value='');$('pwMsg').textContent='';$('pwSheet').classList.add('on')};
+$('pwClose').onclick=()=>$('pwSheet').classList.remove('on');
+$('pwSave').onclick=async()=>{const cur=$('pwCur').value,nw=$('pwNew').value,msg=$('pwMsg');if(!cur){msg.textContent='Enter your current password.';return}if(nw.length<8){msg.textContent='New password must be at least 8 characters.';return}if(nw!==$('pwNew2').value){msg.textContent='The new passwords do not match.';return}try{const u=auth.currentUser;await reauthenticateWithCredential(u,EmailAuthProvider.credential(u.email,cur));await updatePassword(u,nw);$('pwSheet').classList.remove('on');toast('Password updated.')}catch(err){msg.textContent=err.code==='auth/invalid-credential'||err.code==='auth/wrong-password'?'Current password is incorrect.':err.code==='auth/too-many-requests'?'Too many attempts. Try again later.':errMsg(err)}};
 onAuthStateChanged(auth,async u=>{if(busy||owner)return;if(u){try{await bootUser(u,false)}catch(err){$('auMsg').textContent=errMsg(err)}}});
 const _render=render;render=function(){if(role!=='agent'){_render();return}const full=db;db={agents:full.agents.filter(a=>a.id===myAgent),missions:full.missions.filter(m=>m.agentId===myAgent),reports:full.reports.filter(r=>r.agentId===myAgent)};try{_render()}finally{db=full}['missionAgent','reportAgent'].forEach(i=>{const o=$(i).querySelector('option[value=""]');if(o)o.remove()})};
 const _showPage=showPage;showPage=function(n){if(role==='agent'&&(n==='agents'||n==='resources'))n='overview';_showPage(n)};
@@ -395,7 +462,7 @@ const rxEsc=n=>n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const chatActive=()=>$('page-chat').classList.contains('active');
 function fmtTime(ts){const d=new Date(ts);return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' · '+d.toLocaleDateString([],{month:'short',day:'numeric'})}
 function isTagged(m,sid){const a=Array.isArray(m.ment)?m.ment:[];return m.fromId!==sid&&(a.includes(sid)||a.includes('all'))}
-function renderChat(force){const box=$('chatList'),msgs=chatLoad(),rs=roster(),sid=selfIdF(),last=msgs[msgs.length-1];const sig=sid+'|'+msgs.length+'|'+(last&&last.id)+'|'+rs.map(r=>r.name).join(',');if(!force&&sig===chatSig)return;const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;chatSig=sig;const names=rs.map(r=>r.name).filter(Boolean).sort((a,b)=>b.length-a.length).map(n=>rxEsc(esc(n)));const re=new RegExp('@(everyone'+(names.length?'|'+names.join('|'):'')+')','gi');box.innerHTML=msgs.map(m=>{if(m.sys)return '<div class="csys searchable"><span>●</span> '+esc(String(m.text||'').replace(/^●\s*/,''))+'<small>'+esc(fmtTime(+m.ts||0))+'</small></div>';const mine=m.fromId===sid,tag=isTagged(m,sid),h=esc(String(m.text||'')).replace(re,'<span class="mention">@$1</span>');return `<div class="cmsg searchable${mine?' mine':''}${tag?' tagged':''}"><div class="chead"><b>${esc(m.from||'Unknown')}</b><span>${esc(fmtTime(+m.ts||0))}</span>${(mine||role==='owner')?`<button class="cdel" data-del="${esc(m.id)}" aria-label="Delete message">×</button>`:''}</div><div class="cbody">${h}</div></div>`}).join('')||empty('No messages yet. Say hello to the guild.');$('chatTags').innerHTML=['everyone'].concat(rs.filter(r=>r.id!==sid).map(r=>r.name)).map(n=>`<button type="button" class="tagchip" data-tag="${esc(n)}">@${esc(n)}</button>`).join('');if(force||near)box.scrollTop=box.scrollHeight;applySearch()}
+function renderChat(force){const box=$('chatList'),msgs=chatLoad(),rs=roster(),sid=selfIdF(),last=msgs[msgs.length-1];const sig=sid+'|'+msgs.length+'|'+(last&&last.id)+'|'+rs.map(r=>r.name).join(',')+'|'+avSig();if(!force&&sig===chatSig)return;const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;chatSig=sig;const names=rs.map(r=>r.name).filter(Boolean).sort((a,b)=>b.length-a.length).map(n=>rxEsc(esc(n)));const re=new RegExp('@(everyone'+(names.length?'|'+names.join('|'):'')+')','gi');box.innerHTML=msgs.map(m=>{if(m.sys)return '<div class="csys searchable"><span>●</span> '+esc(String(m.text||'').replace(/^●\s*/,''))+'<small>'+esc(fmtTime(+m.ts||0))+'</small></div>';const mine=m.fromId===sid,tag=isTagged(m,sid),h=esc(String(m.text||'')).replace(re,'<span class="mention">@$1</span>');return `<div class="cmsg searchable${mine?' mine':''}${tag?' tagged':''}"><div class="chead">${smallAv(m.fromId)}<b>${esc(m.from||'Unknown')}</b><span>${esc(fmtTime(+m.ts||0))}</span>${(mine||role==='owner')?`<button class="cdel" data-del="${esc(m.id)}" aria-label="Delete message">×</button>`:''}</div><div class="cbody">${h}</div></div>`}).join('')||empty('No messages yet. Say hello to the guild.');$('chatTags').innerHTML=['everyone'].concat(rs.filter(r=>r.id!==sid).map(r=>r.name)).map(n=>`<button type="button" class="tagchip" data-tag="${esc(n)}">@${esc(n)}</button>`).join('');if(force||near)box.scrollTop=box.scrollHeight;applySearch()}
 async function sendChat(){const ta=$('chatInput'),text=ta.value.trim();if(!text)return;if(Date.now()-lastSend<800)return;if(text.length>500){toast('Messages are limited to 500 characters.');return}const rs=roster(),low=text.toLowerCase(),ment=[];if(/@everyone\b/i.test(text))ment.push('all');rs.slice().sort((a,b)=>b.name.length-a.name.length).forEach(r=>{if(r.name&&low.includes('@'+r.name.toLowerCase())&&!ment.includes(r.id))ment.push(r.id)});const sid=selfIdF(),me=rs.find(r=>r.id===sid);const m={id:id(),fromId:sid,from:role==='agent'?(me?me.name:'Agent'):capw(ownerName)+' (Guild Leader)',text,ts:Date.now(),ment};lastSend=Date.now();ta.value='';try{await setDoc(doc(col('chat'),m.id),m);seenSet(Date.now())}catch(err){toast(errMsg(err))}}
 const seenKey=()=>'sg_chatseen_'+uName;
 function seenGet(){try{return +localStorage.getItem(seenKey())||0}catch(e){return 0}}
@@ -410,6 +477,91 @@ $('chatList').addEventListener('click',async e=>{const b=e.target.closest('[data
 const _showPage2=showPage;showPage=function(n){_showPage2(n);if(n==='chat')openChat();else updateBadge()};
 function howlSound(){}
 (function intro(){const el=$('intro');if(!el)return;const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;let st=0,t1;const finish=()=>{if(st===2)return;st=2;clearTimeout(t1);el.classList.add('out');setTimeout(()=>el.remove(),900)};const howl=snd=>{if(st)return;st=1;clearTimeout(t1);el.classList.add('howl');if(snd)howlSound();t1=setTimeout(finish,reduce?1200:5200)};el.addEventListener('click',()=>{if(st===0)howl(true);else finish()});t1=setTimeout(()=>howl(false),reduce?400:3200)})();
+/* ---------- notice board ---------- */
+const noticeSeenKey=()=>'sg_noticeseen_'+uName;
+const noticeSeenGet=()=>{try{return +localStorage.getItem(noticeSeenKey())||0}catch(e){return 0}};
+const noticeSeenSet=t=>{try{localStorage.setItem(noticeSeenKey(),String(t))}catch(e){}};
+const noticesActive=()=>$('page-notices').classList.contains('active');
+function linkify(s){return esc(s).replace(/(https?:\/\/[^\s<]+)/g,u=>'<a href="'+u+'" target="_blank" rel="noopener noreferrer" style="color:var(--lav)">'+u+'</a>')}
+function attachBtns(fl){if(!fl.length)return '';return '<div style="margin:6px 0;display:flex;gap:6px;flex-wrap:wrap">'+fl.map(f=>'<span style="display:inline-flex;gap:3px"><button class="small-btn" onclick="openFile(\''+f.id+'\')">'+fIcon(f)+' '+esc(f.name)+' <span class="muted">'+fmtSize(f.size)+'</span></button>'+(canDel(f)?'<button class="small-btn" aria-label="Remove file" onclick="deleteFile(\''+f.id+'\')">✕</button>':'')+'</span>').join('')+'</div>'}
+function renderNotices(){
+ const el=$('noticesList'),list=notices.slice().sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.created||0)-(a.created||0));
+ if(el)el.innerHTML=list.map(n=>'<article class="notice searchable'+(n.pinned?' pin':'')+'"><div class="nhead"><h3>'+(n.pinned?'📌 ':'📣 ')+esc(n.title)+'</h3><small>'+esc(n.by||'')+' · '+esc(fmtTime(+n.created||0))+'</small></div><p>'+linkify(n.text||'')+'</p>'+pollHtml(n)+attachBtns(fileMeta.filter(f=>f.noticeId===n.id))+readsHtml(n)+(role==='owner'?'<div class="actions" style="margin-top:10px"><button class="small-btn" onclick="toggleNoticePin(\''+n.id+'\')">'+(n.pinned?'Unpin':'Pin')+'</button><button class="small-btn" onclick="attachToNotice(\''+n.id+'\')">📎 Attach</button><button class="small-btn" onclick="deleteNotice(\''+n.id+'\')">Delete</button></div>':'')+'</article>').join('')||empty('No announcements yet.');
+ const top=list[0],ob=$('overviewNotice');
+ if(ob)ob.innerHTML=top?'<div class="nbanner" onclick="goNotices()"><b>'+(top.pinned?'📌 ':'📣 ')+esc(top.title)+'</b><span>'+esc((top.text||'').slice(0,140))+((top.text||'').length>140?'…':'')+'</span><em>Open notice board →</em></div>':'';
+ updateNoticeBadge();applySearch();
+}
+function updateNoticeBadge(){const b=$('noticeBadge');if(!b)return;const seen=noticeSeenGet(),n=notices.filter(x=>(+x.created||0)>seen).length;b.textContent=n;b.style.display=n&&!noticesActive()?'inline-block':'none'}
+function openNotices(){renderNotices();noticeSeenSet(Date.now());updateNoticeBadge();markRead()}
+window.goNotices=()=>showPage('notices');
+window.toggleNoticePin=async nid=>{const n=notices.find(x=>x.id===nid);if(!n||role!=='owner')return;try{await updateDoc(doc(col('notices'),nid),{pinned:!n.pinned})}catch(err){toast(errMsg(err))}};
+window.attachToNotice=nid=>{if(role!=='owner')return;attachTarget=nid;attachKind='notice';$('attachInput').click()};
+window.deleteNotice=async nid=>{if(role!=='owner')return;if(!confirm('Delete this announcement and its files?'))return;try{for(const f of fileMeta.filter(x=>x.noticeId===nid)){await deleteDoc(doc(col('filedata'),f.id)).catch(()=>{});await deleteDoc(doc(col('files'),f.id)).catch(()=>{})}for(const v of votes.filter(x=>x.nid===nid))await deleteDoc(doc(col('votes'),nid+'__'+v.voterId)).catch(()=>{});for(const r of reads.filter(x=>x.nid===nid))await deleteDoc(doc(col('reads'),nid+'__'+r.readerId)).catch(()=>{});await deleteDoc(doc(col('notices'),nid));toast('Announcement deleted.')}catch(err){toast(errMsg(err))}};
+$('noticeForm').onsubmit=async e=>{e.preventDefault();if(role!=='owner')return;const n={id:id(),title:$('noticeTitle').value.trim().slice(0,100),text:$('noticeText').value.trim().slice(0,3000),pinned:$('noticePin').checked,by:capw(ownerName)+' (Guild Leader)',created:Date.now()};const opts=$('noticePoll').value.split('\n').map(s=>s.trim().slice(0,60)).filter(Boolean).slice(0,6);if(opts.length>=2)n.poll=opts;const picked=[...($('noticeFiles').files||[])];try{await setDoc(doc(col('notices'),n.id),n);e.target.reset();toast('Announcement posted.');logAct('Announcement posted: '+n.title);if(picked.length)await uploadMany(picked,{shared:true,noticeId:n.id})}catch(err){toast(errMsg(err))}};
+const _showPageN=showPage;showPage=function(n){_showPageN(n);if(n==='notices')openNotices();else updateNoticeBadge();if(n==='dms')openDms();else updateDmBadge()};
+
+/* ---------- screen privacy: watermark + blackout ---------- */
+function setWatermark(){const t=String(uName||'').replace(/[^a-zA-Z0-9_.-]/g,''),w=$('wm');if(!w)return;if(!t){w.style.display='none';return}const svg="<svg xmlns='http://www.w3.org/2000/svg' width='280' height='180'><text x='14' y='110' transform='rotate(-24 140 90)' fill='white' font-family='sans-serif' font-size='15' letter-spacing='2'>"+t.toUpperCase()+" · SHADOW GARDEN</text></svg>";w.style.backgroundImage='url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';w.style.display='block'}
+const priv=$('privacy');
+const showPriv=()=>{if(!document.body.classList.contains('locked'))priv.classList.add('on')};
+const hidePriv=()=>priv.classList.remove('on');
+document.addEventListener('visibilitychange',()=>{document.hidden?showPriv():setTimeout(hidePriv,150)});
+window.addEventListener('blur',showPriv);window.addEventListener('pagehide',showPriv);
+window.addEventListener('focus',()=>setTimeout(hidePriv,150));
+priv.addEventListener('click',hidePriv);
+document.addEventListener('keyup',e=>{if(e.key==='PrintScreen'||e.code==='PrintScreen'){showPriv();try{navigator.clipboard.writeText(' ')}catch(_){}setTimeout(hidePriv,1800)}});
+document.addEventListener('keydown',e=>{const k=(e.key||'').toLowerCase();if(e.shiftKey&&(e.metaKey||e.ctrlKey&&e.altKey)&&['3','4','5','s'].includes(k)){showPriv();setTimeout(hidePriv,1800)}});
+
+/* ================= quick-win features ================= */
+const actor=()=>role==='owner'?capw(ownerName||uName)+' (Guild Leader)':(beatName||capw(uName));
+function logAct(t){const x={id:id(),text:String(t).slice(0,200),ts:Date.now(),by:actor(),byId:selfIdF()};setDoc(doc(col('activity'),x.id),x).catch(()=>{})}
+/* avatars */
+const okAv=s=>typeof s==='string'&&s.length<45000&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(s);
+const avTag=s=>okAv(s)?'<img src="'+s+'" alt="">':'';
+function avOf(i){if(i==='owner')return ownerAv;const a=rosterAgents.find(x=>x.id===i);return a?a.av:''}
+const smallAv=i=>{const s=avOf(i);return okAv(s)?'<img class="sav" src="'+s+'" alt="">':''};
+const avSig=()=>(ownerAv||'').length+':'+rosterAgents.map(a=>(a.av||'').length).join(',');
+$('photoBtn').onclick=()=>$('photoInput').click();
+$('photoInput').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const bmp=await createImageBitmap(f),s=Math.min(bmp.width,bmp.height),c=document.createElement('canvas');c.width=c.height=128;c.getContext('2d').drawImage(bmp,(bmp.width-s)/2,(bmp.height-s)/2,s,s,0,0,128,128);const url=c.toDataURL('image/jpeg',.75);if(role==='agent')await updateDoc(doc(col('agents'),myAgent),{avatar:url});else await setDoc(netDoc(),{ownerAv:url},{merge:true});toast('Photo updated.')}catch(err){toast(errMsg(err))}};
+/* ranks, scores, leaderboard */
+const RANKS=[[0,'Initiate'],[15,'Shade'],[40,'Operative'],[80,'Phantom'],[150,'Eminence']];
+const rankOf=p=>{let r=RANKS[0][1];for(const t of RANKS)if(p>=t[0])r=t[1];return r};
+const rankPill=i=>{const p=scores[i]||0;return '<span class="pill">★ '+rankOf(p)+' · '+p+' pts</span>'};
+function computeScores(){const o={};db.agents.forEach(a=>{o[a.id]=0});db.missions.forEach(m=>{if(m.status==='Completed'&&m.agentId in o)o[m.agentId]+=10});db.reports.forEach(r=>{if(r.agentId in o)o[r.agentId]+=r.status==='Verified'?5:r.status==='Corroborated'?3:0});return o}
+function syncMeta(){if(role!=='owner')return;clearTimeout(metaT);metaT=setTimeout(async()=>{const roster=db.agents.map(a=>({id:a.id,name:a.name,av:a.avatar||''})),sc=computeScores(),sig=JSON.stringify([roster,sc,ownerAv]);if(sig===metaSig)return;metaSig=sig;try{await setDoc(netDoc(),{ownerName:ownerName,roster:roster,scores:sc,ownerAv:ownerAv},{merge:true})}catch(e){metaSig='';console.error(e)}},800)}
+function renderBoard(){const el=$('boardList');if(!el)return;const l=rosterAgents.slice().sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));el.innerHTML=l.map((a,i)=>{const p=scores[a.id]||0;return '<div class="list-row"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="width:38px;height:38px;font-size:15px">'+(okAv(a.av)?avTag(a.av):'#'+(i+1))+'</div><div><strong>'+(i+1)+'. '+esc(a.name)+'</strong><small>'+p+' points</small></div></div><span class="pill">★ '+rankOf(p)+'</span></div>'}).join('')||empty('No agents yet.')}
+function renderActivity(){const el=$('activityList');if(!el)return;el.innerHTML=acts.slice(0,15).map(a=>'<div class="list-row"><div><strong>'+esc(a.text)+'</strong><small>'+esc(fmtTime(+a.ts||0))+'</small></div></div>').join('')||empty('No activity yet.')}
+/* mission due dates + notes */
+function dueTag(m){if(!m.due)return '';const late=m.status!=='Completed'&&m.due<new Date().toLocaleDateString('en-CA'),d=new Date(m.due+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});return ' · <span class="due'+(late?' late':'')+'">'+(late?'⚠ Overdue ':'Due ')+esc(d)+'</span>'}
+window.openMissionNotes=mid=>{const m=db.missions.find(x=>x.id===mid);if(!m)return;nsMission=mid;$('nsTitle').textContent=m.title;$('nsInput').value='';$('notesSheet').classList.add('on');renderNotesSheet()};
+function renderNotesSheet(){if(!nsMission)return;const l=mnotes.filter(x=>x.missionId===nsMission).sort((a,b)=>a.ts-b.ts);$('nsList').innerHTML=l.map(n=>'<div class="cmsg'+(n.byId===selfIdF()?' mine':'')+'"><div class="chead"><b>'+esc(n.by)+'</b><span>'+esc(fmtTime(+n.ts||0))+'</span>'+((role==='owner'||n.byId===selfIdF())?'<button class="cdel" onclick="delMNote(\''+n.id+'\')" aria-label="Delete note">×</button>':'')+'</div><div class="cbody">'+esc(n.text)+'</div></div>').join('')||empty('No notes yet. Add the first progress note.')}
+$('nsClose').onclick=()=>{nsMission=null;$('notesSheet').classList.remove('on')};
+$('notesSheet').addEventListener('click',e=>{if(e.target.id==='notesSheet')$('nsClose').click()});
+$('nsSend').onclick=async()=>{const t=$('nsInput').value.trim(),m=db.missions.find(x=>x.id===nsMission);if(!t||!m)return;const n={id:id(),missionId:m.id,agentId:m.agentId||'',text:t.slice(0,500),by:actor(),byId:selfIdF(),ts:Date.now()};$('nsInput').value='';try{await setDoc(doc(col('mnotes'),n.id),n);logAct(actor()+' commented on "'+m.title+'"')}catch(err){toast(errMsg(err))}};
+window.delMNote=async nid=>{try{await deleteDoc(doc(col('mnotes'),nid))}catch(err){toast(errMsg(err))}};
+/* polls + read receipts */
+function pollHtml(n){if(!n.poll||!n.poll.length)return '';const vs=votes.filter(v=>v.nid===n.id),tot=vs.length,mine=vs.find(v=>v.voterId===selfIdF());return '<div class="poll">'+n.poll.map((o,i)=>{const c=vs.filter(v=>v.choice===i).length,pc=tot?Math.round(c*100/tot):0;return '<button type="button" class="pollopt'+(mine&&mine.choice===i?' mine':'')+'" onclick="vote(\''+n.id+'\','+i+')"><span class="bar" style="width:'+pc+'%"></span><span class="lbl">'+esc(o)+'</span><span class="cnt">'+c+' · '+pc+'%</span></button>'}).join('')+'<small class="muted">'+tot+' vote'+(tot===1?'':'s')+' · tap an option to vote or change your vote</small></div>'}
+window.vote=async(nid,i)=>{try{await setDoc(doc(col('votes'),nid+'__'+selfIdF()),{nid:nid,voterId:selfIdF(),choice:i,ts:Date.now()})}catch(err){toast(errMsg(err))}};
+function readsHtml(n){if(role!=='owner')return '';const r=reads.filter(x=>x.nid===n.id);return '<div class="muted" style="font-size:11px;margin:6px 0">👁 Seen by '+r.length+'/'+db.agents.length+(r.length?': '+r.map(x=>esc(x.name)).join(', '):'')+'</div>'}
+function markRead(){if(role!=='agent'||!myAgent)return;let set=[];try{set=JSON.parse(localStorage.getItem('sg_nread_'+uName)||'[]')}catch(e){}const todo=notices.filter(n=>!set.includes(n.id));todo.forEach(n=>setDoc(doc(col('reads'),n.id+'__'+myAgent),{nid:n.id,readerId:myAgent,name:beatName||capw(uName),ts:Date.now()}).then(()=>{set.push(n.id);try{localStorage.setItem('sg_nread_'+uName,JSON.stringify(set))}catch(e){}}).catch(()=>{}))}
+/* private messages */
+const dmSeenKey=()=>'sg_dmseen_'+uName;
+const dmSeenGet=()=>{try{return +localStorage.getItem(dmSeenKey())||0}catch(e){return 0}};
+const dmSeenSet=t=>{try{localStorage.setItem(dmSeenKey(),String(t))}catch(e){}};
+const dmsActive=()=>$('page-dms').classList.contains('active');
+let dmSig='',lastDm=0;
+function renderDmPick(){if(role==='agent'){dmWith=myAgent;return}const sel=$('dmPick'),list=db.agents,sig=list.map(a=>a.id+a.name).join('|');if(sig!==dmSig){dmSig=sig;sel.innerHTML=list.map(a=>'<option value="'+esc(a.id)+'">'+esc(a.name)+'</option>').join('');if(!list.some(a=>a.id===dmWith))dmWith=list[0]?list[0].id:''}sel.value=dmWith}
+function renderDMs(force){renderDmPick();const box=$('dmList');if(!box)return;const sid=selfIdF(),l=dms.filter(m=>m.agentId===dmWith).sort((a,b)=>a.ts-b.ts),near=box.scrollHeight-box.scrollTop-box.clientHeight<80;box.innerHTML=l.map(m=>{const mine=m.fromId===sid;return '<div class="cmsg'+(mine?' mine':'')+'"><div class="chead">'+smallAv(m.fromId)+'<b>'+esc(m.from||'')+'</b><span>'+esc(fmtTime(+m.ts||0))+'</span>'+((mine||role==='owner')?'<button class="cdel" data-dmdel="'+esc(m.id)+'" aria-label="Delete message">×</button>':'')+'</div><div class="cbody">'+esc(m.text||'')+'</div></div>'}).join('')||empty(role==='agent'?'No messages yet. Write to the guild leader.':'No messages with this agent yet.');if(force||near)box.scrollTop=box.scrollHeight;if(dmsActive())dmSeenSet(Date.now());updateDmBadge()}
+function updateDmBadge(){const b=$('dmBadge');if(!b)return;const seen=dmSeenGet(),sid=selfIdF(),n=dms.filter(m=>m.fromId!==sid&&(+m.ts||0)>seen).length;b.textContent=n;b.style.display=n&&!dmsActive()?'inline-block':'none'}
+function openDms(){renderDMs(true);dmSeenSet(Date.now());updateDmBadge()}
+$('dmPick').onchange=()=>{dmWith=$('dmPick').value;renderDMs(true)};
+$('dmSend').onclick=async()=>{const ta=$('dmInput'),t=ta.value.trim();if(!t||!dmWith)return;if(Date.now()-lastDm<800)return;lastDm=Date.now();const m={id:id(),agentId:dmWith,fromId:selfIdF(),from:actor(),text:t.slice(0,500),ts:Date.now()};ta.value='';try{await setDoc(doc(col('dms'),m.id),m)}catch(err){toast(errMsg(err))}};
+$('dmList').addEventListener('click',async e=>{const b=e.target.closest('[data-dmdel]');if(!b)return;try{await deleteDoc(doc(col('dms'),b.dataset.dmdel))}catch(err){toast(errMsg(err))}});
+
+const closeSide=()=>{const s=document.querySelector('.sidebar');if(s)s.classList.remove('open')};
+$('photoBtn2').onclick=()=>{closeSide();$('photoBtn').click()};
+$('pwBtn2').onclick=()=>{closeSide();$('pwBtn').click()};
+$('signOutBtn2').onclick=()=>{closeSide();$('signOutBtn').click()};
 authMode('login');
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>

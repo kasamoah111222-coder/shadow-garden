@@ -1,0 +1,172 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function profileExists() { return exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function inNet(n) { return signedIn() && profileExists() && me().owner == n; }
+    function isOwner(n) { return inNet(n) && me().role == 'owner' && request.auth.uid == n; }
+    function isAgent(n) { return inNet(n) && me().role == 'agent'; }
+    function selfId() { return me().role == 'owner' ? 'owner' : me().agentId; }
+
+    // Only these emails may create a guild leader account. Change/add as needed.
+    function ownerEmails() { return ['shadow@shadowgarden.app']; }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || resource.data.owner == request.auth.uid);
+      allow create: if signedIn() && (
+        (request.auth.uid == uid
+          && request.resource.data.role == 'owner'
+          && request.resource.data.owner == uid
+          && request.auth.token.email in ownerEmails()
+          && request.resource.data.keys().hasOnly(['role','owner','username']))
+        ||
+        (request.auth.uid != uid
+          && request.resource.data.role == 'agent'
+          && request.resource.data.owner == request.auth.uid
+          && request.resource.data.keys().hasOnly(['role','owner','agentId','username'])
+          && isOwner(request.auth.uid)));
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid && resource.data.role == 'agent';
+    }
+
+    match /networks/{n} {
+      allow read: if inNet(n);
+      allow create, update: if isOwner(n);
+      allow delete: if false;
+
+      match /agents/{a} {
+        allow read: if isOwner(n) || (isAgent(n) && me().agentId == a);
+        allow create, delete: if isOwner(n);
+        allow update: if isOwner(n) || (isAgent(n) && me().agentId == a
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avatar'])
+          && request.resource.data['avatar'].size() < 40000);
+      }
+
+      match /missions/{m} {
+        allow read: if isOwner(n) || (isAgent(n) && resource.data.agentId == me().agentId);
+        allow create, delete: if isOwner(n);
+        allow update: if isOwner(n) || (isAgent(n)
+          && resource.data.agentId == me().agentId
+          && resource.data.status != 'Completed'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['Planned','In progress','Completed','On hold']);
+      }
+
+      match /reports/{r} {
+        allow read: if isOwner(n) || (isAgent(n) && resource.data.agentId == me().agentId);
+        allow create: if isOwner(n) || (isAgent(n)
+          && request.resource.data.agentId == me().agentId
+          && request.resource.data.status == 'Unverified'
+          && request.resource.data.confidence in ['Unverified','Low','Moderate','High']
+          && request.resource.data.title is string && request.resource.data.title.size() <= 100
+          && request.resource.data.body is string && request.resource.data.body.size() <= 3000
+          && request.resource.data.source is string && request.resource.data.source.size() <= 300);
+        allow update, delete: if isOwner(n);
+      }
+
+      match /notices/{x} {
+        allow read: if inNet(n);
+        allow create, update, delete: if isOwner(n);
+      }
+
+      match /mnotes/{x} {
+        allow read: if isOwner(n) || (isAgent(n) && resource.data.agentId == me().agentId);
+        allow create: if inNet(n) && request.resource.data.byId == selfId()
+          && request.resource.data['text'] is string && request.resource.data['text'].size() <= 500
+          && (isOwner(n) || (isAgent(n) && request.resource.data.agentId == me().agentId
+              && get(/databases/$(database)/documents/networks/$(n)/missions/$(request.resource.data.missionId)).data.agentId == me().agentId));
+        allow update: if false;
+        allow delete: if isOwner(n) || (inNet(n) && resource.data.byId == selfId());
+      }
+
+      match /dms/{x} {
+        allow read: if isOwner(n) || (isAgent(n) && resource.data.agentId == me().agentId);
+        allow create: if inNet(n) && request.resource.data.fromId == selfId()
+          && request.resource.data['text'] is string && request.resource.data['text'].size() <= 500
+          && (isOwner(n) || (isAgent(n) && request.resource.data.agentId == me().agentId));
+        allow update: if false;
+        allow delete: if isOwner(n) || (inNet(n) && resource.data.fromId == selfId());
+      }
+
+      match /activity/{x} {
+        allow read: if isOwner(n);
+        allow create: if inNet(n) && request.resource.data.byId == selfId()
+          && request.resource.data['text'] is string && request.resource.data['text'].size() <= 200;
+        allow update: if false;
+        allow delete: if isOwner(n);
+      }
+
+      match /votes/{v} {
+        allow read: if inNet(n);
+        allow create, update: if inNet(n)
+          && v == request.resource.data.nid + '__' + selfId()
+          && request.resource.data.voterId == selfId()
+          && request.resource.data.choice is int
+          && request.resource.data.choice >= 0 && request.resource.data.choice < 6
+          && request.resource.data.keys().hasOnly(['nid','voterId','choice','ts']);
+        allow delete: if isOwner(n) || (inNet(n) && resource.data.voterId == selfId());
+      }
+
+      match /reads/{v} {
+        allow read: if isOwner(n);
+        allow create, update: if inNet(n)
+          && v == request.resource.data.nid + '__' + selfId()
+          && request.resource.data.readerId == selfId()
+          && request.resource.data.keys().hasOnly(['nid','readerId','name','ts']);
+        allow delete: if isOwner(n);
+      }
+
+      match /presence/{p} {
+        allow read: if inNet(n);
+        allow create, update: if inNet(n) && p == selfId()
+          && request.resource.data.keys().hasOnly(['id','name','ts','role']);
+        allow delete: if inNet(n) && p == selfId();
+      }
+
+      match /files/{f} {
+        allow read: if isOwner(n) || (inNet(n) && resource.data.shared == true)
+          || (isAgent(n) && resource.data.agentId == me().agentId);
+        allow create: if inNet(n)
+          && request.resource.data.keys().hasOnly(['id','name','type','size','by','byId','shared','reportId','agentId','noticeId','ts'])
+          && (request.resource.data.get('noticeId','') == '' || isOwner(n))
+          && request.resource.data.byId == selfId()
+          && request.resource.data.name is string && request.resource.data.name.size() <= 120
+          && request.resource.data['size'] is number && request.resource.data['size'] <= 700000
+          && (request.resource.data.shared == true
+              || isOwner(n)
+              || (isAgent(n) && request.resource.data.agentId == me().agentId
+                  && get(/databases/$(database)/documents/networks/$(n)/reports/$(request.resource.data.reportId)).data.agentId == me().agentId));
+        allow update: if false;
+        allow delete: if isOwner(n) || (inNet(n) && resource.data.byId == selfId());
+      }
+
+      match /filedata/{f} {
+        allow read: if isOwner(n) || (inNet(n)
+          && exists(/databases/$(database)/documents/networks/$(n)/files/$(f))
+          && (get(/databases/$(database)/documents/networks/$(n)/files/$(f)).data.shared == true
+              || (isAgent(n) && get(/databases/$(database)/documents/networks/$(n)/files/$(f)).data.agentId == me().agentId)));
+        allow create: if inNet(n)
+          && exists(/databases/$(database)/documents/networks/$(n)/files/$(f))
+          && get(/databases/$(database)/documents/networks/$(n)/files/$(f)).data.byId == selfId()
+          && request.resource.data.keys().hasOnly(['data'])
+          && request.resource.data['data'] is string && request.resource.data['data'].size() <= 1000000;
+        allow update: if false;
+        allow delete: if isOwner(n) || (inNet(n)
+          && exists(/databases/$(database)/documents/networks/$(n)/files/$(f))
+          && get(/databases/$(database)/documents/networks/$(n)/files/$(f)).data.byId == selfId());
+      }
+
+      match /chat/{c} {
+        allow read: if inNet(n);
+        allow create: if inNet(n)
+          && request.resource.data.fromId == selfId()
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 500;
+        allow delete: if isOwner(n) || (inNet(n) && resource.data.fromId == selfId());
+        allow update: if false;
+      }
+    }
+  }
+}
